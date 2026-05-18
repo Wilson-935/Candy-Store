@@ -299,38 +299,30 @@ tr:hover td{background:var(--pll)}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
 /* ═══════════════ RESPONSIVE ═══════════════ */
-/* Mobile first — sidebar hidden, topbar + bnav visible */
+/* Mobile first */
 .sidebar{display:none}
 .topbar{display:flex}
 .bnav{display:flex}
 .content{padding-bottom:calc(var(--bnav-h) + 16px)}
 
-/* Inversión cards: apiladas en móvil */
-.herm-grid{grid-template-columns:1fr}
-.herm-stats{grid-template-columns:repeat(4,1fr)}
-
-/* Tablet */
+/* Tablet 640px+ */
 @media(min-width:640px){
   .prod-grid{grid-template-columns:repeat(3,1fr)}
   .metrics{grid-template-columns:repeat(4,1fr)}
   .herm-grid{grid-template-columns:1fr 1fr}
   .herm-stats{grid-template-columns:repeat(4,1fr);gap:8px}
-  .hstat-val{font-size:13px}
   .modal-ov{align-items:center}
   .modal{border-radius:20px;max-height:85vh}
   .modal-hdr{border-radius:20px 20px 0 0}
 }
 
-/* Desktop */
+/* Desktop 900px+ — sidebar fijo a la izquierda */
 @media(min-width:900px){
-  /* App shell: row — sidebar izquierda + contenido derecha */
   #screen-app{flex-direction:row}
   .topbar{display:none}
-  /* app-body ocupa todo el espacio restante a la derecha del sidebar */
-  .app-body{flex:1;flex-direction:column;overflow:hidden}
-  .sidebar{display:flex;width:var(--sidebar-w);min-width:var(--sidebar-w)}
+  .sidebar{display:flex;width:var(--sidebar-w);min-width:var(--sidebar-w);flex-shrink:0}
   .bnav{display:none}
-  .content{padding:28px;padding-bottom:28px;max-width:1200px}
+  .content{padding:28px;padding-bottom:28px}
   .prod-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
   .herm-grid{grid-template-columns:1fr 1fr}
   .metrics{grid-template-columns:repeat(4,1fr)}
@@ -594,7 +586,11 @@ tr:hover td{background:var(--pll)}
   </div>
 </div>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+
 // ═══════════════════════════════
 // CAMBIA AQUÍ LOS PINes
 const PINS={wilson:'1234',karen:'1111',samantha:'2222',mama:'3333'};
@@ -604,7 +600,7 @@ const ROLES={wilson:'admin',karen:'inversora',samantha:'inversora',mama:'operado
 const AUMENTO=80;
 const KEY='candy-store-v5';
 
-let cu=null,selU=null,pfiltro='todos',vtafiltro='todas',syncT=null;
+let cu=null,selU=null,pfiltro='todos',vtafiltro='todas';
 let db={productos:[],ventas:[],pedidos:[],inversiones:[],compras:[]};
 
 // ── utils ──
@@ -659,7 +655,7 @@ function doLogin(){
   }
 }
 function logout(){
-  cu=null;selU=null;clearInterval(syncT);
+  cu=null;selU=null;
   document.getElementById('screen-app').style.display='none';
   document.getElementById('screen-login').style.display='flex';
   document.getElementById('step-pin').style.display='none';
@@ -668,17 +664,55 @@ function logout(){
   document.getElementById('lerr').textContent='';
 }
 
-// ── DB ──
-function loadDB(){
-  try{const s=localStorage.getItem(KEY);if(s)db=JSON.parse(s);}catch(e){}
+// ── FIREBASE DB ──
+const firebaseConfig={
+  apiKey:"AIzaSyA-2D8gZKUsaoniqnGmnowqU3GaWUMi5Ek",
+  authDomain:"candy-store-247.firebaseapp.com",
+  databaseURL:"https://candy-store-247-default-rtdb.firebaseio.com",
+  projectId:"candy-store-247",
+  storageBucket:"candy-store-247.firebasestorage.app",
+  messagingSenderId:"713005280377",
+  appId:"1:713005280377:web:a7d878fe451486dfa5f8a8"
+};
+const fbApp=initializeApp(firebaseConfig);
+const fbDB=getDatabase(fbApp);
+const DB_REF=ref(fbDB,'candy-store');
+let _isSaving=false;
+
+async function loadDB(){
+  try{
+    const snap=await get(DB_REF);
+    if(snap.exists()){
+      const r=snap.val();
+      db={productos:r.productos||[],ventas:r.ventas||[],pedidos:r.pedidos||[],inversiones:r.inversiones||[],compras:r.compras||[]};
+    }
+  }catch(e){console.error('loadDB error',e);}
 }
+
 function saveDB(){
-  try{localStorage.setItem(KEY,JSON.stringify(db));showSync();}catch(e){}
+  _isSaving=true;
+  set(DB_REF,db)
+    .then(()=>{showSync();setTimeout(()=>_isSaving=false,1500);})
+    .catch(e=>{console.error('saveDB error',e);_isSaving=false;});
 }
+
+function startRealtimeSync(){
+  onValue(DB_REF,snap=>{
+    if(_isSaving)return;
+    if(snap.exists()){
+      const r=snap.val();
+      db={productos:r.productos||[],ventas:r.ventas||[],pedidos:r.pedidos||[],inversiones:r.inversiones||[],compras:r.compras||[]};
+      render();
+      showSync();
+    }
+  });
+}
+
 function showSync(){
   const b=document.getElementById('sync-bar');
+  b.textContent='☁️  Sincronizado';
   b.classList.add('show');
-  setTimeout(()=>b.classList.remove('show'),2000);
+  setTimeout(()=>b.classList.remove('show'),2500);
 }
 
 // ── NAV CONFIG ──
@@ -709,8 +743,7 @@ const NAV_CFG={
 };
 
 // ── START ──
-function startApp(){
-  loadDB();
+async function startApp(){
   document.getElementById('screen-login').style.display='none';
   document.getElementById('screen-app').style.display='flex';
   const n=N();
@@ -718,7 +751,9 @@ function startApp(){
   ['sb-name','top-name'].forEach(id=>document.getElementById(id).textContent=n);
   document.getElementById('sb-role').textContent=R()==='admin'?'Administrador':R()==='inversora'?'Inversora':'Operadora';
   buildNav();
+  await loadDB();
   nav('inicio');
+  startRealtimeSync();
 }
 
 function buildNav(){
@@ -1062,6 +1097,7 @@ function renderInversion(){
         <div class="hstat"><div class="hstat-val" style="color:${neto>=0?'var(--g)':'var(--r)'}">${bs(neto)}</div><div class="hstat-lbl">Neto</div></div>
       </div></div>`;
   }).join('');
+  
   const tb=document.getElementById('tb-inv');
   if(!lista.length){tb.innerHTML=`<tr><td colspan="5"><div class="empty" style="padding:24px"><i class="ti ti-chart-bar"></i><p>Sin inversiones registradas</p></div></td></tr>`;return;}
   tb.innerHTML=lista.map(x=>`<tr><td style="font-weight:700">${x.desc}</td><td style="font-weight:900">${bs(x.monto)}</td><td><span class="badge bv">${x.hermana}</span></td><td>${fmtD(x.fecha)}</td><td><button class="btn btn-xs btn-danger" onclick="delInv('${x.id}')"><i class="ti ti-trash"></i></button></td></tr>`).join('');
@@ -1161,9 +1197,20 @@ function guardarCompra(){
 function delComp(id){if(!confirm('¿Eliminar?'))return;db.compras=db.compras.filter(c=>c.id!==id);saveDB();toast('Eliminado','warn');render();}
 
 // ── INIT ──
-loadDB();
 document.getElementById('screen-login').style.display='flex';
 document.getElementById('screen-app').style.display='none';
+
+// Con type="module" las funciones no son globales — las exponemos manualmente
+Object.assign(window,{
+  selPerfil,goBack,pnext,doLogin,logout,
+  nav,openM,closeM,
+  filtP,filtVta,
+  calcPedPrecio,calcPedSaldo,guardarPed,editPed,chgEst,delPed,pedDesdeStock,
+  autoVta,calcVta,guardarVta,delVta,
+  guardarInv,delInv,
+  previewImg,autoPrecio,guardarProd,editProd,delProd,
+  guardarCompra,delComp,
+});
 </script>
 </body>
 </html>
