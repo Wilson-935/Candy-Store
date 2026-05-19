@@ -277,7 +277,7 @@ tr:hover td{background:var(--pll)}
 .herm-name{font-size:13px;font-weight:900;color:var(--pd);margin-bottom:10px;display:flex;align-items:center;gap:7px}
 .herm-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .hstat{background:rgba(255,255,255,.8);border-radius:10px;padding:8px 6px;text-align:center}
-.hstat-val{font-size:13px;font-weight:900;color:var(--pd);line-height:1.2}
+.hstat-val{font-size:12px;font-weight:900;color:var(--pd);line-height:1.2}
 .hstat-lbl{font-size:9px;color:var(--mu);font-weight:800;margin-top:2px}
 
 /* ═══════════════ IMG UPLOAD ═══════════════ */
@@ -299,33 +299,33 @@ tr:hover td{background:var(--pll)}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
 /* ═══════════════ RESPONSIVE ═══════════════ */
-/* Mobile first */
+/* Mobile first — sidebar hidden, topbar + bnav visible */
 .sidebar{display:none}
 .topbar{display:flex}
 .bnav{display:flex}
 .content{padding-bottom:calc(var(--bnav-h) + 16px)}
 
-/* Tablet 640px+ */
+/* Tablet */
 @media(min-width:640px){
   .prod-grid{grid-template-columns:repeat(3,1fr)}
   .metrics{grid-template-columns:repeat(4,1fr)}
   .herm-grid{grid-template-columns:1fr 1fr}
-  .herm-stats{grid-template-columns:repeat(4,1fr);gap:8px}
+  .herm-stats{gap:8px}
+  .hstat-val{font-size:13px}
   .modal-ov{align-items:center}
   .modal{border-radius:20px;max-height:85vh}
   .modal-hdr{border-radius:20px 20px 0 0}
 }
 
-/* Desktop 900px+ — sidebar fijo a la izquierda */
+/* Desktop */
 @media(min-width:900px){
   #screen-app{flex-direction:row}
   .topbar{display:none}
-  .sidebar{display:flex;width:var(--sidebar-w);min-width:var(--sidebar-w);flex-shrink:0}
+  .app-body{flex:1;overflow:hidden}
+  .sidebar{display:flex}
   .bnav{display:none}
-  .content{padding:28px;padding-bottom:28px}
+  .content{padding:24px;padding-bottom:24px}
   .prod-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
-  .herm-grid{grid-template-columns:1fr 1fr}
-  .metrics{grid-template-columns:repeat(4,1fr)}
   .modal-ov{align-items:center}
   .modal{border-radius:20px;max-height:80vh}
   .modal-hdr{border-radius:20px 20px 0 0}
@@ -333,7 +333,6 @@ tr:hover td{background:var(--pll)}
 }
 @media(min-width:1200px){
   .prod-grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
-  .content{padding:32px}
 }
 </style>
 </head>
@@ -686,28 +685,24 @@ async function loadDB(){
       const r=snap.val();
       db={productos:r.productos||[],ventas:r.ventas||[],pedidos:r.pedidos||[],inversiones:r.inversiones||[],compras:r.compras||[]};
     }
-  }catch(e){console.error('loadDB error',e);}
+  }catch(e){console.error('loadDB',e);}
 }
-
 function saveDB(){
   _isSaving=true;
   set(DB_REF,db)
     .then(()=>{showSync();setTimeout(()=>_isSaving=false,1500);})
-    .catch(e=>{console.error('saveDB error',e);_isSaving=false;});
+    .catch(e=>{console.error('saveDB',e);_isSaving=false;});
 }
-
 function startRealtimeSync(){
   onValue(DB_REF,snap=>{
     if(_isSaving)return;
     if(snap.exists()){
       const r=snap.val();
       db={productos:r.productos||[],ventas:r.ventas||[],pedidos:r.pedidos||[],inversiones:r.inversiones||[],compras:r.compras||[]};
-      render();
-      showSync();
+      render();showSync();
     }
   });
 }
-
 function showSync(){
   const b=document.getElementById('sync-bar');
   b.textContent='☁️  Sincronizado';
@@ -749,7 +744,7 @@ async function startApp(){
   const n=N();
   ['sb-av','top-av'].forEach(id=>document.getElementById(id).textContent=n[0]);
   ['sb-name','top-name'].forEach(id=>document.getElementById(id).textContent=n);
-  document.getElementById('sb-role').textContent=R()==='admin'?'Administrador':R()==='inversora'?'Inversora':'Operadora';
+  document.getElementById('sb-role').textContent=R()==='admin'?'Administrador':R()==='inversora'?'Inversora':'Entregas y Ventas';
   buildNav();
   await loadDB();
   nav('inicio');
@@ -780,18 +775,18 @@ function openM(id){
   if(id==='m-venta'){
     document.getElementById('vta-prod').innerHTML='<option value="">— seleccionar —</option>'+
       db.productos.map(p=>`<option value="${p.id}">${p.codigo?'['+p.codigo+'] ':''} ${p.nombre} · Stock:${p.stock}</option>`).join('');
-    if(R()==='inversora')document.getElementById('vta-hermana').value=N();
+    if(R()==='inversora'||R()==='operadora')document.getElementById('vta-hermana').value=N();
     document.getElementById('vta-stock-warn').style.display='none';
   }
   if(id==='m-compra'){
     document.getElementById('comp-prod').innerHTML='<option value="">— seleccionar —</option>'+
       db.productos.map(p=>`<option value="${p.id}">${p.nombre}</option>`).join('');
-    if(R()==='inversora')document.getElementById('comp-herm').value=N();
+    if(R()==='inversora'||R()==='operadora')document.getElementById('comp-herm').value=N();
   }
   if(id==='m-inversion'){
     document.getElementById('inv-fecha').value=today();
     const iq=document.getElementById('inv-quien');
-    if(R()==='inversora'){iq.value=N();iq.disabled=true;}else iq.disabled=false;
+    iq.disabled=false;
   }
   if(id==='m-pedido'){
     document.getElementById('ped-m-title').textContent='Nuevo pedido';
@@ -1008,10 +1003,10 @@ function renderVentas(){
   const bnv=document.getElementById('btn-nv');
   if(bnv)bnv.style.display='inline-flex';
   const filt=getVtaFiltro();
-  const lista=(R()==='inversora'?db.ventas.filter(v=>v.hermana===N()):db.ventas).filter(filt);
+  const lista=db.ventas.filter(filt);
   const rc=document.getElementById('res-herm');
   const hermanas=['Karen','Samantha'];
-  if(R()==='admin'||R()==='operadora'){
+  if(true){
     rc.innerHTML=hermanas.map((h,i)=>{
       const vs=db.ventas.filter(v=>v.hermana===h&&filt(v));
       const ing=vs.reduce((s,v)=>s+v.total,0),gan=vs.reduce((s,v)=>s+(v.total-v.costo),0);
@@ -1030,7 +1025,7 @@ function renderVentas(){
     const vs=db.ventas.filter(v=>v.hermana===N()&&filt(v));
     const ing=vs.reduce((s,v)=>s+v.total,0),gan=vs.reduce((s,v)=>s+(v.total-v.costo),0);
     const inv=db.inversiones.filter(x=>x.hermana===N()).reduce((s,x)=>s+x.monto,0);
-    rc.innerHTML=`<div class="herm-card hc-a" >
+    rc.innerHTML=`<div class="herm-card hc-a" style="grid-column:span 2">
       <div class="herm-name"><i class="ti ti-user-circle" style="font-size:18px"></i>Mis ventas — ${N()}</div>
       <div class="herm-stats">
         <div class="hstat"><div class="hstat-val">${bs(ing)}</div><div class="hstat-lbl">Ventas</div></div>
@@ -1080,15 +1075,15 @@ function delVta(id){if(!confirm('¿Eliminar venta?'))return;db.ventas=db.ventas.
 
 // ── INVERSIÓN ──
 function renderInversion(){
-  const n=N(),lista=R()==='inversora'?db.inversiones.filter(x=>x.hermana===n):db.inversiones;
+  const n=N(),lista=db.inversiones;
   const cards=document.getElementById('inv-cards');
   cards.innerHTML=['Karen','Samantha'].map((h,i)=>{
     const inv=db.inversiones.filter(x=>x.hermana===h).reduce((s,x)=>s+x.monto,0);
     const gan=db.ventas.filter(v=>v.hermana===h).reduce((s,v)=>s+(v.total-v.costo),0);
     const comp=db.compras.filter(c=>c.hermana===h).reduce((s,c)=>s+c.total,0);
     const neto=gan-inv;
-    if(R()==='inversora'&&h!==n)return '';
-    return `<div class="herm-card ${i===0?'hc-a':'hc-b'}" ${R()==='inversora'?'':''}>
+    // todas las hermanas ven las dos cards
+    return `<div class="herm-card ${i===0?'hc-a':'hc-b'}" >
       <div class="herm-name"><i class="ti ti-user-circle" style="font-size:18px"></i>${h}</div>
       <div class="herm-stats">
         <div class="hstat"><div class="hstat-val">${bs(inv)}</div><div class="hstat-lbl">Invertido</div></div>
@@ -1126,9 +1121,9 @@ function autoPrecio(){
   if(c>0)document.getElementById('prod-precio').value=(c+AUMENTO).toFixed(2);
 }
 function renderProductos(){
-  const bap=document.getElementById('btn-ap');if(bap)bap.style.display=R()==='admin'?'inline-flex':'none';
+  const bap=document.getElementById('btn-ap');if(bap)bap.style.display='inline-flex';
   const q=(document.getElementById('prod-search')?.value||'').toLowerCase().trim();
-  let lista=R()==='inversora'?db.productos.filter(p=>p.duena===N()||p.duena==='Ambas'):db.productos;
+  let lista=db.productos;
   if(q)lista=lista.filter(p=>(p.nombre||'').toLowerCase().includes(q)||(p.codigo||'').toLowerCase().includes(q)||(p.cat||'').toLowerCase().includes(q));
   const grid=document.getElementById('prod-grid');
   if(!lista.length){grid.innerHTML='<div class="empty" style="grid-column:1/-1"><i class="ti ti-package"></i><p>'+(q?'Sin resultados para "'+q+'"':'No hay productos registrados')+'</p></div>';return;}
@@ -1147,7 +1142,7 @@ function renderProductos(){
         <div class="prod-prices">${p.costo?`<span class="prod-costo">${bs(p.costo)}</span>`:''}<span class="prod-precio">${bs(p.precio)}</span></div>
         <div class="prod-duena">👩 ${p.duena} · 📈 Margen ${m}%</div>
       </div>
-      ${R()==='admin'?`<div class="prod-actions"><button class="btn btn-sm btn-amber" style="flex:1;justify-content:center" onclick="editProd('${p.id}')"><i class="ti ti-edit"></i> Editar</button><button class="btn btn-sm btn-danger" onclick="delProd('${p.id}')"><i class="ti ti-trash"></i></button></div>`:''}
+      `<div class="prod-actions"><button class="btn btn-sm btn-amber" style="flex:1;justify-content:center" onclick="editProd('${p.id}')"><i class="ti ti-edit"></i> Editar</button>${R()==='admin'?`<button class="btn btn-sm btn-danger" onclick="delProd('${p.id}')"><i class="ti ti-trash"></i></button>`:''}</div>`
     </div>`;
   }).join('');
 }
@@ -1200,7 +1195,6 @@ function delComp(id){if(!confirm('¿Eliminar?'))return;db.compras=db.compras.fil
 document.getElementById('screen-login').style.display='flex';
 document.getElementById('screen-app').style.display='none';
 
-// Con type="module" las funciones no son globales — las exponemos manualmente
 Object.assign(window,{
   selPerfil,goBack,pnext,doLogin,logout,
   nav,openM,closeM,
