@@ -357,10 +357,10 @@ tr:hover td{background:var(--pll)}
     <div id="step-perfil">
       <div class="login-q">¿Quién eres?</div>
       <div class="perfiles">
-        <div class="pfbtn" onclick="selPerfil('wilson',this)"><div class="sel-check">✓</div><div class="pf-ico"><i class="ti ti-shield-check"></i></div><div class="pf-name">Wilson</div><div class="pf-rol">Admin</div></div>
-        <div class="pfbtn" onclick="selPerfil('karen',this)"><div class="sel-check">✓</div><div class="pf-ico"><i class="ti ti-user-circle"></i></div><div class="pf-name">Karen</div><div class="pf-rol">Inversora</div></div>
-        <div class="pfbtn" onclick="selPerfil('samantha',this)"><div class="sel-check">✓</div><div class="pf-ico"><i class="ti ti-user-circle"></i></div><div class="pf-name">Samantha</div><div class="pf-rol">Inversora</div></div>
-        <div class="pfbtn" onclick="selPerfil('mama',this)"><div class="sel-check">✓</div><div class="pf-ico"><i class="ti ti-heart"></i></div><div class="pf-name">Mamá</div><div class="pf-rol">Operadora</div></div>
+        <div class="pfbtn" onclick="selPerfil('wilson')"><div class="sel-check">✓</div><div class="pf-ico"><i class="ti ti-shield-check"></i></div><div class="pf-name">Wilson</div><div class="pf-rol">Admin</div></div>
+        <div class="pfbtn" onclick="selPerfil('karen')"><div class="sel-check">✓</div><div class="pf-ico"><i class="ti ti-user-circle"></i></div><div class="pf-name">Karen</div><div class="pf-rol">Inversora</div></div>
+        <div class="pfbtn" onclick="selPerfil('samantha')"><div class="sel-check">✓</div><div class="pf-ico"><i class="ti ti-user-circle"></i></div><div class="pf-name">Samantha</div><div class="pf-rol">Inversora</div></div>
+        <div class="pfbtn" onclick="selPerfil('mama')"><div class="sel-check">✓</div><div class="pf-ico"><i class="ti ti-heart"></i></div><div class="pf-name">Mamá</div><div class="pf-rol">Operadora</div></div>
       </div>
     </div>
     <div id="step-pin" class="pin-section">
@@ -594,8 +594,6 @@ tr:hover td{background:var(--pll)}
   </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
 // ═══════════════════════════════
 // CAMBIA AQUÍ LOS PINes
@@ -606,7 +604,7 @@ const ROLES={wilson:'admin',karen:'inversora',samantha:'inversora',mama:'operado
 const AUMENTO=80;
 const KEY='candy-store-v5';
 
-let cu=null,selU=null,pfiltro='todos',vtafiltro='todas';
+let cu=null,selU=null,pfiltro='todos',vtafiltro='todas',syncT=null;
 let db={productos:[],ventas:[],pedidos:[],inversiones:[],compras:[]};
 
 // ── utils ──
@@ -628,10 +626,10 @@ function toast(msg,type='success'){
 }
 
 // ── LOGIN ──
-function selPerfil(u,el){
+function selPerfil(u){
   selU=u;
   document.querySelectorAll('.pfbtn').forEach(b=>b.classList.remove('sel'));
-  el.classList.add('sel');
+  event.currentTarget.classList.add('sel');
   document.getElementById('lerr').textContent='';
   ['p0','p1','p2','p3'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('step-perfil').style.display='none';
@@ -661,7 +659,7 @@ function doLogin(){
   }
 }
 function logout(){
-  cu=null;selU=null;
+  cu=null;selU=null;clearInterval(syncT);
   document.getElementById('screen-app').style.display='none';
   document.getElementById('screen-login').style.display='flex';
   document.getElementById('step-pin').style.display='none';
@@ -670,33 +668,17 @@ function logout(){
   document.getElementById('lerr').textContent='';
 }
 
-// ── FIREBASE DB ──
-const firebaseConfig={apiKey:"AIzaSyA-2D8gZKUsaoniqnGmnowqU3GaWUMi5Ek",authDomain:"candy-store-247.firebaseapp.com",databaseURL:"https://candy-store-247-default-rtdb.firebaseio.com",projectId:"candy-store-247",storageBucket:"candy-store-247.firebasestorage.app",messagingSenderId:"713005280377",appId:"1:713005280377:web:a7d878fe451486dfa5f8a8"};
-firebase.initializeApp(firebaseConfig);
-const FB=firebase.database().ref('candy-store');
-let _saving=false;
-
-async function loadDB(){
-  try{
-    const snap=await FB.get();
-    if(snap.exists()){const r=snap.val();db={productos:r.productos||[],ventas:r.ventas||[],pedidos:r.pedidos||[],inversiones:r.inversiones||[],compras:r.compras||[]};}
-  }catch(e){console.error('loadDB',e);}
+// ── DB ──
+function loadDB(){
+  try{const s=localStorage.getItem(KEY);if(s)db=JSON.parse(s);}catch(e){}
 }
 function saveDB(){
-  _saving=true;
-  FB.set(db).then(()=>{showSync();setTimeout(()=>_saving=false,1500);}).catch(e=>{console.error('saveDB',e);_saving=false;});
-}
-function startRealtimeSync(){
-  FB.on('value',snap=>{
-    if(_saving)return;
-    if(snap.exists()){const r=snap.val();db={productos:r.productos||[],ventas:r.ventas||[],pedidos:r.pedidos||[],inversiones:r.inversiones||[],compras:r.compras||[]};render();showSync();}
-  });
+  try{localStorage.setItem(KEY,JSON.stringify(db));showSync();}catch(e){}
 }
 function showSync(){
   const b=document.getElementById('sync-bar');
-  b.textContent='☁️  Sincronizado';
   b.classList.add('show');
-  setTimeout(()=>b.classList.remove('show'),2500);
+  setTimeout(()=>b.classList.remove('show'),2000);
 }
 
 // ── NAV CONFIG ──
@@ -727,7 +709,8 @@ const NAV_CFG={
 };
 
 // ── START ──
-async function startApp(){
+function startApp(){
+  loadDB();
   document.getElementById('screen-login').style.display='none';
   document.getElementById('screen-app').style.display='flex';
   const n=N();
@@ -735,9 +718,7 @@ async function startApp(){
   ['sb-name','top-name'].forEach(id=>document.getElementById(id).textContent=n);
   document.getElementById('sb-role').textContent=R()==='admin'?'Administrador':R()==='inversora'?'Inversora':'Operadora';
   buildNav();
-  await loadDB();
   nav('inicio');
-  startRealtimeSync();
 }
 
 function buildNav(){
@@ -775,8 +756,7 @@ function openM(id){
   if(id==='m-inversion'){
     document.getElementById('inv-fecha').value=today();
     const iq=document.getElementById('inv-quien');
-    if(R()!=='admin')iq.value=N();
-    iq.disabled=false;
+    if(R()==='inversora'){iq.value=N();iq.disabled=true;}else iq.disabled=false;
   }
   if(id==='m-pedido'){
     document.getElementById('ped-m-title').textContent='Nuevo pedido';
@@ -1110,9 +1090,9 @@ function autoPrecio(){
   if(c>0)document.getElementById('prod-precio').value=(c+AUMENTO).toFixed(2);
 }
 function renderProductos(){
-  const bap=document.getElementById('btn-ap');if(bap)bap.style.display='inline-flex';
+  const bap=document.getElementById('btn-ap');if(bap)bap.style.display=R()==='admin'?'inline-flex':'none';
   const q=(document.getElementById('prod-search')?.value||'').toLowerCase().trim();
-  let lista=db.productos;
+  let lista=R()==='inversora'?db.productos.filter(p=>p.duena===N()||p.duena==='Ambas'):db.productos;
   if(q)lista=lista.filter(p=>(p.nombre||'').toLowerCase().includes(q)||(p.codigo||'').toLowerCase().includes(q)||(p.cat||'').toLowerCase().includes(q));
   const grid=document.getElementById('prod-grid');
   if(!lista.length){grid.innerHTML='<div class="empty" style="grid-column:1/-1"><i class="ti ti-package"></i><p>'+(q?'Sin resultados para "'+q+'"':'No hay productos registrados')+'</p></div>';return;}
@@ -1131,7 +1111,7 @@ function renderProductos(){
         <div class="prod-prices">${p.costo?`<span class="prod-costo">${bs(p.costo)}</span>`:''}<span class="prod-precio">${bs(p.precio)}</span></div>
         <div class="prod-duena">👩 ${p.duena} · 📈 Margen ${m}%</div>
       </div>
-      `<div class="prod-actions"><button class="btn btn-sm btn-amber" style="flex:1;justify-content:center" onclick="editProd('${p.id}')"><i class="ti ti-edit"></i> Editar</button>${R()==='admin'?`<button class="btn btn-sm btn-danger" onclick="delProd('${p.id}')"><i class="ti ti-trash"></i></button>`:''}</div>`
+      ${R()==='admin'?`<div class="prod-actions"><button class="btn btn-sm btn-amber" style="flex:1;justify-content:center" onclick="editProd('${p.id}')"><i class="ti ti-edit"></i> Editar</button><button class="btn btn-sm btn-danger" onclick="delProd('${p.id}')"><i class="ti ti-trash"></i></button></div>`:''}
     </div>`;
   }).join('');
 }
@@ -1181,6 +1161,7 @@ function guardarCompra(){
 function delComp(id){if(!confirm('¿Eliminar?'))return;db.compras=db.compras.filter(c=>c.id!==id);saveDB();toast('Eliminado','warn');render();}
 
 // ── INIT ──
+loadDB();
 document.getElementById('screen-login').style.display='flex';
 document.getElementById('screen-app').style.display='none';
 </script>
