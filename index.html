@@ -277,7 +277,7 @@ tr:hover td{background:var(--pll)}
 .herm-name{font-size:13px;font-weight:900;color:var(--pd);margin-bottom:10px;display:flex;align-items:center;gap:7px}
 .herm-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .hstat{background:rgba(255,255,255,.8);border-radius:10px;padding:8px 6px;text-align:center}
-.hstat-val{font-size:12px;font-weight:900;color:var(--pd);line-height:1.2}
+.hstat-val{font-size:13px;font-weight:900;color:var(--pd);line-height:1.2}
 .hstat-lbl{font-size:9px;color:var(--mu);font-weight:800;margin-top:2px}
 
 /* ═══════════════ IMG UPLOAD ═══════════════ */
@@ -305,12 +305,16 @@ tr:hover td{background:var(--pll)}
 .bnav{display:flex}
 .content{padding-bottom:calc(var(--bnav-h) + 16px)}
 
+/* Inversión cards: apiladas en móvil */
+.herm-grid{grid-template-columns:1fr}
+.herm-stats{grid-template-columns:repeat(4,1fr)}
+
 /* Tablet */
 @media(min-width:640px){
   .prod-grid{grid-template-columns:repeat(3,1fr)}
   .metrics{grid-template-columns:repeat(4,1fr)}
   .herm-grid{grid-template-columns:1fr 1fr}
-  .herm-stats{gap:8px}
+  .herm-stats{grid-template-columns:repeat(4,1fr);gap:8px}
   .hstat-val{font-size:13px}
   .modal-ov{align-items:center}
   .modal{border-radius:20px;max-height:85vh}
@@ -319,13 +323,17 @@ tr:hover td{background:var(--pll)}
 
 /* Desktop */
 @media(min-width:900px){
+  /* App shell: row — sidebar izquierda + contenido derecha */
   #screen-app{flex-direction:row}
   .topbar{display:none}
-  .app-body{flex:1;overflow:hidden}
-  .sidebar{display:flex}
+  /* app-body ocupa todo el espacio restante a la derecha del sidebar */
+  .app-body{flex:1;flex-direction:column;overflow:hidden}
+  .sidebar{display:flex;width:var(--sidebar-w);min-width:var(--sidebar-w)}
   .bnav{display:none}
-  .content{padding:24px;padding-bottom:24px}
+  .content{padding:28px;padding-bottom:28px;max-width:1200px}
   .prod-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
+  .herm-grid{grid-template-columns:1fr 1fr}
+  .metrics{grid-template-columns:repeat(4,1fr)}
   .modal-ov{align-items:center}
   .modal{border-radius:20px;max-height:80vh}
   .modal-hdr{border-radius:20px 20px 0 0}
@@ -333,6 +341,7 @@ tr:hover td{background:var(--pll)}
 }
 @media(min-width:1200px){
   .prod-grid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+  .content{padding:32px}
 }
 </style>
 </head>
@@ -585,11 +594,9 @@ tr:hover td{background:var(--pll)}
   </div>
 </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, set, onValue, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
-
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
 // ═══════════════════════════════
 // CAMBIA AQUÍ LOS PINes
 const PINS={wilson:'1234',karen:'1111',samantha:'2222',mama:'3333'};
@@ -664,43 +671,25 @@ function logout(){
 }
 
 // ── FIREBASE DB ──
-const firebaseConfig={
-  apiKey:"AIzaSyA-2D8gZKUsaoniqnGmnowqU3GaWUMi5Ek",
-  authDomain:"candy-store-247.firebaseapp.com",
-  databaseURL:"https://candy-store-247-default-rtdb.firebaseio.com",
-  projectId:"candy-store-247",
-  storageBucket:"candy-store-247.firebasestorage.app",
-  messagingSenderId:"713005280377",
-  appId:"1:713005280377:web:a7d878fe451486dfa5f8a8"
-};
-const fbApp=initializeApp(firebaseConfig);
-const fbDB=getDatabase(fbApp);
-const DB_REF=ref(fbDB,'candy-store');
-let _isSaving=false;
+const firebaseConfig={apiKey:"AIzaSyA-2D8gZKUsaoniqnGmnowqU3GaWUMi5Ek",authDomain:"candy-store-247.firebaseapp.com",databaseURL:"https://candy-store-247-default-rtdb.firebaseio.com",projectId:"candy-store-247",storageBucket:"candy-store-247.firebasestorage.app",messagingSenderId:"713005280377",appId:"1:713005280377:web:a7d878fe451486dfa5f8a8"};
+firebase.initializeApp(firebaseConfig);
+const FB=firebase.database().ref('candy-store');
+let _saving=false;
 
 async function loadDB(){
   try{
-    const snap=await get(DB_REF);
-    if(snap.exists()){
-      const r=snap.val();
-      db={productos:r.productos||[],ventas:r.ventas||[],pedidos:r.pedidos||[],inversiones:r.inversiones||[],compras:r.compras||[]};
-    }
+    const snap=await FB.get();
+    if(snap.exists()){const r=snap.val();db={productos:r.productos||[],ventas:r.ventas||[],pedidos:r.pedidos||[],inversiones:r.inversiones||[],compras:r.compras||[]};}
   }catch(e){console.error('loadDB',e);}
 }
 function saveDB(){
-  _isSaving=true;
-  set(DB_REF,db)
-    .then(()=>{showSync();setTimeout(()=>_isSaving=false,1500);})
-    .catch(e=>{console.error('saveDB',e);_isSaving=false;});
+  _saving=true;
+  FB.set(db).then(()=>{showSync();setTimeout(()=>_saving=false,1500);}).catch(e=>{console.error('saveDB',e);_saving=false;});
 }
 function startRealtimeSync(){
-  onValue(DB_REF,snap=>{
-    if(_isSaving)return;
-    if(snap.exists()){
-      const r=snap.val();
-      db={productos:r.productos||[],ventas:r.ventas||[],pedidos:r.pedidos||[],inversiones:r.inversiones||[],compras:r.compras||[]};
-      render();showSync();
-    }
+  FB.on('value',snap=>{
+    if(_saving)return;
+    if(snap.exists()){const r=snap.val();db={productos:r.productos||[],ventas:r.ventas||[],pedidos:r.pedidos||[],inversiones:r.inversiones||[],compras:r.compras||[]};render();showSync();}
   });
 }
 function showSync(){
@@ -775,13 +764,13 @@ function openM(id){
   if(id==='m-venta'){
     document.getElementById('vta-prod').innerHTML='<option value="">— seleccionar —</option>'+
       db.productos.map(p=>`<option value="${p.id}">${p.codigo?'['+p.codigo+'] ':''} ${p.nombre} · Stock:${p.stock}</option>`).join('');
-    if(R()==='inversora'||R()==='operadora')document.getElementById('vta-hermana').value=N();
+    if(R()==='inversora')document.getElementById('vta-hermana').value=N();
     document.getElementById('vta-stock-warn').style.display='none';
   }
   if(id==='m-compra'){
     document.getElementById('comp-prod').innerHTML='<option value="">— seleccionar —</option>'+
       db.productos.map(p=>`<option value="${p.id}">${p.nombre}</option>`).join('');
-    if(R()==='inversora'||R()==='operadora')document.getElementById('comp-herm').value=N();
+    if(R()==='inversora')document.getElementById('comp-herm').value=N();
   }
   if(id==='m-inversion'){
     document.getElementById('inv-fecha').value=today();
@@ -1004,10 +993,10 @@ function renderVentas(){
   const bnv=document.getElementById('btn-nv');
   if(bnv)bnv.style.display='inline-flex';
   const filt=getVtaFiltro();
-  const lista=db.ventas.filter(filt);
+  const lista=(R()==='inversora'?db.ventas.filter(v=>v.hermana===N()):db.ventas).filter(filt);
   const rc=document.getElementById('res-herm');
   const hermanas=['Karen','Samantha'];
-  if(true){
+  if(R()==='admin'||R()==='operadora'){
     rc.innerHTML=hermanas.map((h,i)=>{
       const vs=db.ventas.filter(v=>v.hermana===h&&filt(v));
       const ing=vs.reduce((s,v)=>s+v.total,0),gan=vs.reduce((s,v)=>s+(v.total-v.costo),0);
@@ -1026,7 +1015,7 @@ function renderVentas(){
     const vs=db.ventas.filter(v=>v.hermana===N()&&filt(v));
     const ing=vs.reduce((s,v)=>s+v.total,0),gan=vs.reduce((s,v)=>s+(v.total-v.costo),0);
     const inv=db.inversiones.filter(x=>x.hermana===N()).reduce((s,x)=>s+x.monto,0);
-    rc.innerHTML=`<div class="herm-card hc-a" style="grid-column:span 2">
+    rc.innerHTML=`<div class="herm-card hc-a" >
       <div class="herm-name"><i class="ti ti-user-circle" style="font-size:18px"></i>Mis ventas — ${N()}</div>
       <div class="herm-stats">
         <div class="hstat"><div class="hstat-val">${bs(ing)}</div><div class="hstat-lbl">Ventas</div></div>
@@ -1076,15 +1065,15 @@ function delVta(id){if(!confirm('¿Eliminar venta?'))return;db.ventas=db.ventas.
 
 // ── INVERSIÓN ──
 function renderInversion(){
-  const n=N(),lista=db.inversiones;
+  const n=N(),lista=R()==='inversora'?db.inversiones.filter(x=>x.hermana===n):db.inversiones;
   const cards=document.getElementById('inv-cards');
   cards.innerHTML=['Karen','Samantha'].map((h,i)=>{
     const inv=db.inversiones.filter(x=>x.hermana===h).reduce((s,x)=>s+x.monto,0);
     const gan=db.ventas.filter(v=>v.hermana===h).reduce((s,v)=>s+(v.total-v.costo),0);
     const comp=db.compras.filter(c=>c.hermana===h).reduce((s,c)=>s+c.total,0);
     const neto=gan-inv;
-    // todos ven ambas cards
-    return `<div class="herm-card ${i===0?'hc-a':'hc-b'}">
+    if(R()==='inversora'&&h!==n)return '';
+    return `<div class="herm-card ${i===0?'hc-a':'hc-b'}" ${R()==='inversora'?'':''}>
       <div class="herm-name"><i class="ti ti-user-circle" style="font-size:18px"></i>${h}</div>
       <div class="herm-stats">
         <div class="hstat"><div class="hstat-val">${bs(inv)}</div><div class="hstat-lbl">Invertido</div></div>
@@ -1093,7 +1082,6 @@ function renderInversion(){
         <div class="hstat"><div class="hstat-val" style="color:${neto>=0?'var(--g)':'var(--r)'}">${bs(neto)}</div><div class="hstat-lbl">Neto</div></div>
       </div></div>`;
   }).join('');
-
   const tb=document.getElementById('tb-inv');
   if(!lista.length){tb.innerHTML=`<tr><td colspan="5"><div class="empty" style="padding:24px"><i class="ti ti-chart-bar"></i><p>Sin inversiones registradas</p></div></td></tr>`;return;}
   tb.innerHTML=lista.map(x=>`<tr><td style="font-weight:700">${x.desc}</td><td style="font-weight:900">${bs(x.monto)}</td><td><span class="badge bv">${x.hermana}</span></td><td>${fmtD(x.fecha)}</td><td><button class="btn btn-xs btn-danger" onclick="delInv('${x.id}')"><i class="ti ti-trash"></i></button></td></tr>`).join('');
@@ -1195,18 +1183,6 @@ function delComp(id){if(!confirm('¿Eliminar?'))return;db.compras=db.compras.fil
 // ── INIT ──
 document.getElementById('screen-login').style.display='flex';
 document.getElementById('screen-app').style.display='none';
-
-// Con type="module" las funciones no son globales — exponerlas
-Object.assign(window,{
-  selPerfil,goBack,pnext,doLogin,logout,
-  nav,openM,closeM,
-  filtP,filtVta,
-  calcPedPrecio,calcPedSaldo,guardarPed,editPed,chgEst,delPed,pedDesdeStock,
-  autoVta,calcVta,guardarVta,delVta,
-  guardarInv,delInv,
-  previewImg,autoPrecio,guardarProd,editProd,delProd,
-  guardarCompra,delComp,
-});
 </script>
 </body>
 </html>
