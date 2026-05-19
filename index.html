@@ -348,10 +348,10 @@ tr:hover td{background:var(--pll)}
     <div id="step-perfil">
       <div class="login-q">¿Quién eres?</div>
       <div class="perfiles">
-        <div class="pfbtn" onclick="selPerfil('wilson')"><div class="sel-check">✓</div><div class="pf-ico"><i class="ti ti-shield-check"></i></div><div class="pf-name">Wilson</div><div class="pf-rol">Admin</div></div>
-        <div class="pfbtn" onclick="selPerfil('karen')"><div class="sel-check">✓</div><div class="pf-ico"><i class="ti ti-user-circle"></i></div><div class="pf-name">Karen</div><div class="pf-rol">Inversora</div></div>
-        <div class="pfbtn" onclick="selPerfil('samantha')"><div class="sel-check">✓</div><div class="pf-ico"><i class="ti ti-user-circle"></i></div><div class="pf-name">Samantha</div><div class="pf-rol">Inversora</div></div>
-        <div class="pfbtn" onclick="selPerfil('mama')"><div class="sel-check">✓</div><div class="pf-ico"><i class="ti ti-heart"></i></div><div class="pf-name">Mamá</div><div class="pf-rol">Operadora</div></div>
+        <div class="pfbtn" onclick="selPerfil('wilson',this)"><div class="sel-check">✓</div><div class="pf-ico"><i class="ti ti-shield-check"></i></div><div class="pf-name">Wilson</div><div class="pf-rol">Admin</div></div>
+        <div class="pfbtn" onclick="selPerfil('karen',this)"><div class="sel-check">✓</div><div class="pf-ico"><i class="ti ti-user-circle"></i></div><div class="pf-name">Karen</div><div class="pf-rol">Inversora</div></div>
+        <div class="pfbtn" onclick="selPerfil('samantha',this)"><div class="sel-check">✓</div><div class="pf-ico"><i class="ti ti-user-circle"></i></div><div class="pf-name">Samantha</div><div class="pf-rol">Inversora</div></div>
+        <div class="pfbtn" onclick="selPerfil('mama',this)"><div class="sel-check">✓</div><div class="pf-ico"><i class="ti ti-heart"></i></div><div class="pf-name">Mamá</div><div class="pf-rol">Operadora</div></div>
       </div>
     </div>
     <div id="step-pin" class="pin-section">
@@ -621,10 +621,10 @@ function toast(msg,type='success'){
 }
 
 // ── LOGIN ──
-function selPerfil(u){
+function selPerfil(u,el){
   selU=u;
   document.querySelectorAll('.pfbtn').forEach(b=>b.classList.remove('sel'));
-  event.currentTarget.classList.add('sel');
+  el.classList.add('sel');
   document.getElementById('lerr').textContent='';
   ['p0','p1','p2','p3'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('step-perfil').style.display='none';
@@ -744,7 +744,7 @@ async function startApp(){
   const n=N();
   ['sb-av','top-av'].forEach(id=>document.getElementById(id).textContent=n[0]);
   ['sb-name','top-name'].forEach(id=>document.getElementById(id).textContent=n);
-  document.getElementById('sb-role').textContent=R()==='admin'?'Administrador':R()==='inversora'?'Inversora':'Entregas y Ventas';
+  document.getElementById('sb-role').textContent=R()==='admin'?'Administrador':R()==='inversora'?'Inversora':'Operadora';
   buildNav();
   await loadDB();
   nav('inicio');
@@ -786,6 +786,7 @@ function openM(id){
   if(id==='m-inversion'){
     document.getElementById('inv-fecha').value=today();
     const iq=document.getElementById('inv-quien');
+    if(R()!=='admin')iq.value=N();
     iq.disabled=false;
   }
   if(id==='m-pedido'){
@@ -1082,8 +1083,8 @@ function renderInversion(){
     const gan=db.ventas.filter(v=>v.hermana===h).reduce((s,v)=>s+(v.total-v.costo),0);
     const comp=db.compras.filter(c=>c.hermana===h).reduce((s,c)=>s+c.total,0);
     const neto=gan-inv;
-    // todas las hermanas ven las dos cards
-    return `<div class="herm-card ${i===0?'hc-a':'hc-b'}" >
+    // todos ven ambas cards
+    return `<div class="herm-card ${i===0?'hc-a':'hc-b'}">
       <div class="herm-name"><i class="ti ti-user-circle" style="font-size:18px"></i>${h}</div>
       <div class="herm-stats">
         <div class="hstat"><div class="hstat-val">${bs(inv)}</div><div class="hstat-lbl">Invertido</div></div>
@@ -1092,7 +1093,7 @@ function renderInversion(){
         <div class="hstat"><div class="hstat-val" style="color:${neto>=0?'var(--g)':'var(--r)'}">${bs(neto)}</div><div class="hstat-lbl">Neto</div></div>
       </div></div>`;
   }).join('');
-  
+
   const tb=document.getElementById('tb-inv');
   if(!lista.length){tb.innerHTML=`<tr><td colspan="5"><div class="empty" style="padding:24px"><i class="ti ti-chart-bar"></i><p>Sin inversiones registradas</p></div></td></tr>`;return;}
   tb.innerHTML=lista.map(x=>`<tr><td style="font-weight:700">${x.desc}</td><td style="font-weight:900">${bs(x.monto)}</td><td><span class="badge bv">${x.hermana}</span></td><td>${fmtD(x.fecha)}</td><td><button class="btn btn-xs btn-danger" onclick="delInv('${x.id}')"><i class="ti ti-trash"></i></button></td></tr>`).join('');
@@ -1195,6 +1196,7 @@ function delComp(id){if(!confirm('¿Eliminar?'))return;db.compras=db.compras.fil
 document.getElementById('screen-login').style.display='flex';
 document.getElementById('screen-app').style.display='none';
 
+// Con type="module" las funciones no son globales — exponerlas
 Object.assign(window,{
   selPerfil,goBack,pnext,doLogin,logout,
   nav,openM,closeM,
