@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -7,9 +8,6 @@
 <meta name="theme-color" content="#5B21B6">
 <title>Candy Store — Gestión</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.33.0/dist/tabler-icons.min.css">
-<!-- Firebase SDK compat -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -671,32 +669,12 @@ function logout(){
   document.getElementById('lerr').textContent='';
 }
 
-// ── DB (Firebase Realtime Database) ──
-const firebaseConfig={apiKey:"AIzaSyA-2D8gZKUsaoniqnGmnowqU3GaWUMi5Ek",authDomain:"candy-store-247.firebaseapp.com",databaseURL:"https://candy-store-247-default-rtdb.firebaseio.com",projectId:"candy-store-247",storageBucket:"candy-store-247.firebasestorage.app",messagingSenderId:"713005280377",appId:"1:713005280377:web:a7d878fe451486dfa5f8a8"};
-firebase.initializeApp(firebaseConfig);
-const fbDB=firebase.database();
-const FB_KEY='candy-store-v5';
-
-function loadDB(cb){
-  // Escucha cambios en tiempo real — se dispara al inicio y cada vez que otro dispositivo guarda
-  fbDB.ref(FB_KEY).on('value',snap=>{
-    const val=snap.val();
-    if(val){
-      // Firebase puede devolver objetos en lugar de arrays si se guardaron con push(); normalizamos
-      db.productos=Array.isArray(val.productos)?val.productos:(val.productos?Object.values(val.productos):[]);
-      db.ventas=Array.isArray(val.ventas)?val.ventas:(val.ventas?Object.values(val.ventas):[]);
-      db.pedidos=Array.isArray(val.pedidos)?val.pedidos:(val.pedidos?Object.values(val.pedidos):[]);
-      db.inversiones=Array.isArray(val.inversiones)?val.inversiones:(val.inversiones?Object.values(val.inversiones):[]);
-      db.compras=Array.isArray(val.compras)?val.compras:(val.compras?Object.values(val.compras):[]);
-    }
-    if(typeof cb==='function'){cb();cb=null;}  // primera carga → mostrar login
-    else{try{render();}catch(e){}}             // actualizaciones en tiempo real → refrescar vista
-  });
+// ── DB ──
+function loadDB(){
+  try{const s=localStorage.getItem(KEY);if(s)db=JSON.parse(s);}catch(e){}
 }
 function saveDB(){
-  fbDB.ref(FB_KEY).set(db)
-    .then(()=>showSync())
-    .catch(e=>console.error('Firebase save error:',e));
+  try{localStorage.setItem(KEY,JSON.stringify(db));showSync();}catch(e){}
 }
 function showSync(){
   const b=document.getElementById('sync-bar');
@@ -733,14 +711,15 @@ const NAV_CFG={
 
 // ── START ──
 function startApp(){
+  loadDB();
+  document.getElementById('screen-login').style.display='none';
+  document.getElementById('screen-app').style.display='flex';
   const n=N();
   ['sb-av','top-av'].forEach(id=>document.getElementById(id).textContent=n[0]);
   ['sb-name','top-name'].forEach(id=>document.getElementById(id).textContent=n);
   document.getElementById('sb-role').textContent=R()==='admin'?'Administrador':R()==='inversora'?'Inversora':'Operadora';
   buildNav();
   nav('inicio');
-  document.getElementById('screen-login').style.display='none';
-  document.getElementById('screen-app').style.display='flex';
 }
 
 function buildNav(){
@@ -800,8 +779,7 @@ function openM(id){
     ['prod-codigo','prod-nom','prod-cat','prod-notas'].forEach(i=>document.getElementById(i).value='');
     ['prod-costo','prod-precio'].forEach(i=>document.getElementById(i).value='');
     document.getElementById('prod-stock').value='0';
-    // Si es inversora, fijar su nombre como dueña automáticamente
-    document.getElementById('prod-duena').value=R()==='inversora'?N():'Karen';
+    document.getElementById('prod-duena').value='Karen';
     document.getElementById('prod-img-data').value='';
     const prev=document.getElementById('prod-img-prev');prev.src='';prev.style.display='none';
   }
@@ -1113,8 +1091,7 @@ function autoPrecio(){
   if(c>0)document.getElementById('prod-precio').value=(c+AUMENTO).toFixed(2);
 }
 function renderProductos(){
-  const bap=document.getElementById('btn-ap');
-  if(bap)bap.style.display=(R()==='admin'||R()==='inversora')?'inline-flex':'none';
+  const bap=document.getElementById('btn-ap');if(bap)bap.style.display=R()==='admin'?'inline-flex':'none';
   const q=(document.getElementById('prod-search')?.value||'').toLowerCase().trim();
   let lista=R()==='inversora'?db.productos.filter(p=>p.duena===N()||p.duena==='Ambas'):db.productos;
   if(q)lista=lista.filter(p=>(p.nombre||'').toLowerCase().includes(q)||(p.codigo||'').toLowerCase().includes(q)||(p.cat||'').toLowerCase().includes(q));
@@ -1124,7 +1101,6 @@ function renderProductos(){
     const m=p.precio>0?((p.precio-p.costo)/p.precio*100).toFixed(0):0;
     const stk=parseInt(p.stock)||0;
     const sc=stk<=0?'br2':stk<=3?'br2':stk<=10?'ba':'bg';
-    const puedeEditar=R()==='admin'||(R()==='inversora'&&(p.duena===N()||p.duena==='Ambas'));
     return `<div class="prod-card">
       <div class="prod-img-wrap">
         ${p.img?`<img src="${p.img}" alt="${p.nombre}" loading="lazy">`:`<div class="prod-img-ph">📦</div>`}
@@ -1136,7 +1112,7 @@ function renderProductos(){
         <div class="prod-prices">${p.costo?`<span class="prod-costo">${bs(p.costo)}</span>`:''}<span class="prod-precio">${bs(p.precio)}</span></div>
         <div class="prod-duena">👩 ${p.duena} · 📈 Margen ${m}%</div>
       </div>
-      ${puedeEditar?`<div class="prod-actions"><button class="btn btn-sm btn-amber" style="flex:1;justify-content:center" onclick="editProd('${p.id}')"><i class="ti ti-edit"></i> Editar</button>${R()==='admin'?`<button class="btn btn-sm btn-danger" onclick="delProd('${p.id}')"><i class="ti ti-trash"></i></button>`:''}</div>`:''}
+      ${R()==='admin'?`<div class="prod-actions"><button class="btn btn-sm btn-amber" style="flex:1;justify-content:center" onclick="editProd('${p.id}')"><i class="ti ti-edit"></i> Editar</button><button class="btn btn-sm btn-danger" onclick="delProd('${p.id}')"><i class="ti ti-trash"></i></button></div>`:''}
     </div>`;
   }).join('');
 }
@@ -1145,19 +1121,7 @@ function guardarProd(){
   const eid=document.getElementById('prod-id').value;
   const p={id:eid||uid(),codigo:document.getElementById('prod-codigo').value.trim().toUpperCase(),nombre:nom,cat:document.getElementById('prod-cat').value,duena:document.getElementById('prod-duena').value,costo:parseFloat(document.getElementById('prod-costo').value)||0,precio:parseFloat(document.getElementById('prod-precio').value)||0,stock:parseInt(document.getElementById('prod-stock').value)||0,notas:document.getElementById('prod-notas').value,img:document.getElementById('prod-img-data').value||''};
   const idx=db.productos.findIndex(x=>x.id===p.id);
-  if(idx>=0){
-    // Edición: solo actualizar producto, sin tocar inversiones
-    db.productos[idx]=p;
-  } else {
-    // Producto nuevo: registrar inversión automática si tiene costo y stock
-    db.productos.unshift(p);
-    const totalInv=p.costo*p.stock;
-    if(totalInv>0&&(p.duena==='Karen'||p.duena==='Samantha')){
-      db.inversiones.unshift({id:uid(),hermana:p.duena,
-        desc:'Compra inicial: '+p.nombre+' ('+p.stock+' u. × '+bs(p.costo)+')',
-        monto:totalInv,fecha:today(),auto:true});
-    }
-  }
+  if(idx>=0)db.productos[idx]=p;else db.productos.unshift(p);
   saveDB();closeM('m-producto');toast(eid?'Producto actualizado ✓':'Producto agregado ✓');render();
 }
 function editProd(id){
@@ -1191,27 +1155,16 @@ function renderCompras(){
 function guardarCompra(){
   const pid=document.getElementById('comp-prod').value;if(!pid)return toast('Selecciona un producto','error');
   const prod=db.productos.find(x=>x.id===pid),cant=parseInt(document.getElementById('comp-cant').value)||1,precio=parseFloat(document.getElementById('comp-precio').value)||0;
-  const hermana=document.getElementById('comp-herm').value;
-  const totalInv=cant*precio;
-  db.compras.unshift({id:uid(),pid,pnom:prod.nombre,cant,precio,total:totalInv,hermana,fecha:today()});
-  prod.stock=(parseInt(prod.stock)||0)+cant;
-  prod.costo=precio;
-  // Registrar inversión automática por esta compra adicional
-  if(totalInv>0&&(hermana==='Karen'||hermana==='Samantha')){
-    db.inversiones.unshift({id:uid(),hermana,
-      desc:'Reposición: '+prod.nombre+' ('+cant+' u. × '+bs(precio)+')',
-      monto:totalInv,fecha:today(),auto:true});
-  }
-  saveDB();closeM('m-compra');toast('Compra e inversión registradas ✓');render();
+  db.compras.unshift({id:uid(),pid,pnom:prod.nombre,cant,precio,total:cant*precio,hermana:document.getElementById('comp-herm').value,fecha:today()});
+  prod.stock=(parseInt(prod.stock)||0)+cant;prod.costo=precio;
+  saveDB();closeM('m-compra');toast('Compra registrada ✓');render();
 }
 function delComp(id){if(!confirm('¿Eliminar?'))return;db.compras=db.compras.filter(c=>c.id!==id);saveDB();toast('Eliminado','warn');render();}
 
 // ── INIT ──
-// Conecta Firebase y espera la primera lectura antes de mostrar el login
-loadDB(()=>{
-  document.getElementById('screen-login').style.display='flex';
-  document.getElementById('screen-app').style.display='none';
-});
+loadDB();
+document.getElementById('screen-login').style.display='flex';
+document.getElementById('screen-app').style.display='none';
 </script>
 </body>
 </html>
