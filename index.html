@@ -7,6 +7,9 @@
 <meta name="theme-color" content="#5B21B6">
 <title>Candy Store — Gestión</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.33.0/dist/tabler-icons.min.css">
+<!-- Firebase SDK compat -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -668,12 +671,32 @@ function logout(){
   document.getElementById('lerr').textContent='';
 }
 
-// ── DB ──
-function loadDB(){
-  try{const s=localStorage.getItem(KEY);if(s)db=JSON.parse(s);}catch(e){}
+// ── DB (Firebase Realtime Database) ──
+const firebaseConfig={apiKey:"AIzaSyA-2D8gZKUsaoniqnGmnowqU3GaWUMi5Ek",authDomain:"candy-store-247.firebaseapp.com",databaseURL:"https://candy-store-247-default-rtdb.firebaseio.com",projectId:"candy-store-247",storageBucket:"candy-store-247.firebasestorage.app",messagingSenderId:"713005280377",appId:"1:713005280377:web:a7d878fe451486dfa5f8a8"};
+firebase.initializeApp(firebaseConfig);
+const fbDB=firebase.database();
+const FB_KEY='candy-store-v5';
+
+function loadDB(cb){
+  // Escucha cambios en tiempo real — se dispara al inicio y cada vez que otro dispositivo guarda
+  fbDB.ref(FB_KEY).on('value',snap=>{
+    const val=snap.val();
+    if(val){
+      // Firebase puede devolver objetos en lugar de arrays si se guardaron con push(); normalizamos
+      db.productos=Array.isArray(val.productos)?val.productos:(val.productos?Object.values(val.productos):[]);
+      db.ventas=Array.isArray(val.ventas)?val.ventas:(val.ventas?Object.values(val.ventas):[]);
+      db.pedidos=Array.isArray(val.pedidos)?val.pedidos:(val.pedidos?Object.values(val.pedidos):[]);
+      db.inversiones=Array.isArray(val.inversiones)?val.inversiones:(val.inversiones?Object.values(val.inversiones):[]);
+      db.compras=Array.isArray(val.compras)?val.compras:(val.compras?Object.values(val.compras):[]);
+    }
+    if(typeof cb==='function'){cb();cb=null;}  // primera carga → mostrar login
+    else{try{render();}catch(e){}}             // actualizaciones en tiempo real → refrescar vista
+  });
 }
 function saveDB(){
-  try{localStorage.setItem(KEY,JSON.stringify(db));showSync();}catch(e){}
+  fbDB.ref(FB_KEY).set(db)
+    .then(()=>showSync())
+    .catch(e=>console.error('Firebase save error:',e));
 }
 function showSync(){
   const b=document.getElementById('sync-bar');
@@ -710,15 +733,14 @@ const NAV_CFG={
 
 // ── START ──
 function startApp(){
-  loadDB();
-  document.getElementById('screen-login').style.display='none';
-  document.getElementById('screen-app').style.display='flex';
   const n=N();
   ['sb-av','top-av'].forEach(id=>document.getElementById(id).textContent=n[0]);
   ['sb-name','top-name'].forEach(id=>document.getElementById(id).textContent=n);
   document.getElementById('sb-role').textContent=R()==='admin'?'Administrador':R()==='inversora'?'Inversora':'Operadora';
   buildNav();
   nav('inicio');
+  document.getElementById('screen-login').style.display='none';
+  document.getElementById('screen-app').style.display='flex';
 }
 
 function buildNav(){
@@ -1185,9 +1207,11 @@ function guardarCompra(){
 function delComp(id){if(!confirm('¿Eliminar?'))return;db.compras=db.compras.filter(c=>c.id!==id);saveDB();toast('Eliminado','warn');render();}
 
 // ── INIT ──
-loadDB();
-document.getElementById('screen-login').style.display='flex';
-document.getElementById('screen-app').style.display='none';
+// Conecta Firebase y espera la primera lectura antes de mostrar el login
+loadDB(()=>{
+  document.getElementById('screen-login').style.display='flex';
+  document.getElementById('screen-app').style.display='none';
+});
 </script>
 </body>
 </html>
