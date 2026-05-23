@@ -273,7 +273,7 @@ tr:hover td{background:var(--pll)}
 /* ═══════════════ PEDIDO CARD ═══════════════ */
 .ped-card{background:#fff;border:2px solid var(--pl);border-radius:var(--radius);
   padding:14px;margin-bottom:12px;box-shadow:var(--card-shadow)}
-.ped-card.estado-listo{border-color:#A7F3D0;background:#F0FDF4}
+.ped-card.estado-entregado{border-color:#A7F3D0;background:#F0FDF4}
 .ped-card.estado-cancelado{border-color:#FECACA;background:#FFF5F5;opacity:.75}
 .ped-top{display:flex;justify-content:space-between;gap:10px;margin-bottom:6px}
 .ped-client{font-size:15px;font-weight:900;color:var(--tx)}
@@ -310,30 +310,6 @@ tr:hover td{background:var(--pll)}
 .empty{text-align:center;padding:40px 16px;color:var(--mu)}
 .empty i{font-size:44px;display:block;margin-bottom:10px;color:var(--p);opacity:.25}
 .empty p{font-size:13px;font-weight:800}
-
-/* ═══════════════ AJUSTES (admin) ═══════════════ */
-.aj-section{background:#fff;border:1.5px solid var(--pl);border-radius:var(--radius);
-  overflow:hidden;margin-bottom:16px;box-shadow:var(--card-shadow)}
-.aj-hdr{padding:14px 18px;background:linear-gradient(135deg,var(--pll),#EFF6FF);
-  border-bottom:1.5px solid var(--pl);font-size:13px;font-weight:800;color:var(--pd);
-  display:flex;align-items:center;gap:8px}
-.aj-body{padding:18px;display:flex;flex-direction:column;gap:12px}
-.aj-desc{font-size:12px;color:var(--mu);font-weight:700;line-height:1.5;
-  background:var(--pll);border-radius:10px;padding:10px 14px;border-left:3px solid var(--p)}
-.aj-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.aj-info{flex:1;min-width:0}
-.aj-info strong{display:block;font-size:13px;color:var(--tx);font-weight:800;margin-bottom:2px}
-.aj-info span{font-size:11px;color:var(--mu);font-weight:700}
-.import-zone{border:2.5px dashed var(--p);border-radius:var(--radius-sm);padding:24px;
-  text-align:center;background:var(--pll);cursor:pointer;transition:all .2s}
-.import-zone:hover{background:var(--pl);border-color:var(--pd)}
-.import-zone i{font-size:32px;color:var(--p);display:block;margin-bottom:8px}
-.import-zone p{font-size:12px;color:var(--pd);font-weight:800}
-.import-zone small{font-size:10px;color:var(--mu);font-weight:700}
-.db-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.db-stat{background:var(--pll);border-radius:10px;padding:10px;text-align:center;border:1.5px solid var(--pl)}
-.db-stat-val{font-size:16px;font-weight:900;color:var(--pd)}
-.db-stat-lbl{font-size:9px;color:var(--mu);font-weight:800;margin-top:2px}
 
 /* ═══════════════ ANIMATIONS ═══════════════ */
 @keyframes slideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
@@ -462,7 +438,7 @@ tr:hover td{background:var(--pll)}
           <div style="display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap">
             <button class="filt-btn active" onclick="filtP('todos',this)">Todos</button>
             <button class="filt-btn" onclick="filtP('pendiente',this)">⏳ Pendientes</button>
-            <button class="filt-btn" onclick="filtP('listo',this)">✅ Listos</button>
+            <button class="filt-btn" onclick="filtP('entregado',this)">✅ Entregados</button>
             <button class="filt-btn" onclick="filtP('cancelado',this)">❌ Cancelados</button>
           </div>
           <div id="lista-peds"></div>
@@ -501,55 +477,6 @@ tr:hover td{background:var(--pll)}
           <div id="prod-grid" class="prod-grid"></div>
         </div>
 
-        <!-- AJUSTES (solo admin) -->
-        <div class="page" id="pg-ajustes">
-          <div class="pg-head"><div class="pg-title">⚙️ Ajustes</div></div>
-
-          <div class="aj-section">
-            <div class="aj-hdr"><i class="ti ti-database"></i> Estado de la base de datos</div>
-            <div class="aj-body">
-              <div class="db-stats">
-                <div class="db-stat"><div class="db-stat-val" id="aj-n-prod">—</div><div class="db-stat-lbl">Productos</div></div>
-                <div class="db-stat"><div class="db-stat-val" id="aj-n-ped">—</div><div class="db-stat-lbl">Pedidos</div></div>
-                <div class="db-stat"><div class="db-stat-val" id="aj-n-vta">—</div><div class="db-stat-lbl">Ventas</div></div>
-                <div class="db-stat"><div class="db-stat-val" id="aj-n-inv">—</div><div class="db-stat-lbl">Inversiones</div></div>
-                <div class="db-stat"><div class="db-stat-val" id="aj-n-comp">—</div><div class="db-stat-lbl">Compras</div></div>
-                <div class="db-stat"><div class="db-stat-val" id="aj-size">—</div><div class="db-stat-lbl">Tamaño KB</div></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="aj-section">
-            <div class="aj-hdr"><i class="ti ti-download"></i> Exportar base de datos</div>
-            <div class="aj-body">
-              <div class="aj-desc">Descarga una copia completa de todos los datos como archivo <strong>.json</strong>. Úsalo como respaldo antes de hacer cambios importantes.</div>
-              <div class="aj-row">
-                <div class="aj-info">
-                  <strong>Exportar todo a JSON</strong>
-                  <span>candy-store-backup-[fecha].json</span>
-                </div>
-                <button class="btn btn-green" onclick="exportarDB()"><i class="ti ti-download"></i> Descargar</button>
-              </div>
-            </div>
-          </div>
-
-          <div class="aj-section">
-            <div class="aj-hdr"><i class="ti ti-upload"></i> Importar base de datos</div>
-            <div class="aj-body">
-              <div class="aj-desc" style="border-left-color:var(--r);background:#FEF2F2;color:#991B1B">
-                ⚠️ <strong>¡Cuidado!</strong> Importar un archivo <strong>reemplaza completamente</strong> todos los datos actuales en Firebase. Exporta primero como respaldo.
-              </div>
-              <div class="import-zone" onclick="document.getElementById('import-file').click()">
-                <i class="ti ti-file-import"></i>
-                <p>Toca para elegir archivo JSON</p>
-                <small>Solo archivos exportados desde esta app</small>
-                <input type="file" id="import-file" accept=".json" onchange="importarDB(this)" style="display:none">
-              </div>
-              <div id="import-preview" style="display:none;background:var(--gl);border-radius:10px;padding:12px;font-size:12px;color:var(--gd);font-weight:800;line-height:1.8"></div>
-            </div>
-          </div>
-        </div>
-
         <!-- COMPRAS -->
         <div class="page" id="pg-compras">
           <div class="pg-head"><div class="pg-title">Compras</div><button class="btn btn-primary" id="btn-ac" onclick="openM('m-compra')"><i class="ti ti-plus"></i> Registrar</button></div>
@@ -574,6 +501,7 @@ tr:hover td{background:var(--pll)}
     <div class="modal-hdr"><span id="ped-m-title">Nuevo pedido</span><button class="btn btn-sm" onclick="closeM('m-pedido')"><i class="ti ti-x"></i></button></div>
     <div class="modal-body">
       <input type="hidden" id="ped-id">
+      <input type="hidden" id="ped-prod-id">
       <div class="grid2">
         <div class="field"><label>👤 Cliente</label><input id="ped-cli" placeholder="Nombre"></div>
         <div class="field"><label>📱 WhatsApp</label><input id="ped-wa" placeholder="+591..." type="tel"></div>
@@ -587,17 +515,20 @@ tr:hover td{background:var(--pll)}
       </div>
       <div class="grid3">
         <div class="field"><label>💸 Costo (Bs.)</label><input id="ped-costo" type="number" min="0" step="0.01" oninput="calcPedPrecio()" placeholder="0.00"></div>
-        <div class="field"><label>🏷️ Precio venta (Bs.)</label><input id="ped-pv" type="number" min="0" step="0.01" oninput="calcPedSaldo()" placeholder="0.00"></div>
+        <div class="field"><label>🏷️ Precio venta (Bs.)</label><input id="ped-pv" type="number" min="0" step="0.01" oninput="calcPedTotal()" placeholder="0.00"></div>
         <div class="field"><label>📈 Aumento</label><input id="ped-aum" readonly></div>
       </div>
       <div class="grid2">
-        <div class="field"><label>💵 Total cobrado (Bs.)</label><input id="ped-total" type="number" min="0" step="0.01" placeholder="0.00"></div>
-        <div class="field"><label>✅ Adelanto (Bs.)</label><input id="ped-pagado" type="number" min="0" step="0.01" value="0" oninput="calcPedSaldo()"></div>
+        <div class="field"><label>🔢 Cantidad</label><input id="ped-cant" type="number" min="1" value="1" oninput="calcPedTotal()"></div>
+        <div class="field"><label>💵 Total (Bs.)</label><input id="ped-total" type="number" min="0" step="0.01" readonly></div>
       </div>
-      <div class="field"><label>⏳ Saldo pendiente</label><input id="ped-saldo" readonly></div>
+      <div class="grid2">
+        <div class="field"><label>✅ Adelanto (Bs.)</label><input id="ped-pagado" type="number" min="0" step="0.01" value="0" oninput="calcPedSaldo()"></div>
+        <div class="field"><label>⏳ Saldo pendiente</label><input id="ped-saldo" readonly></div>
+      </div>
       <div class="grid2">
         <div class="field"><label>🚚 Entrega</label><select id="ped-entrega"><option value="entrega">En mano</option><option value="envio">Envío</option></select></div>
-        <div class="field"><label>📋 Estado</label><select id="ped-estado"><option value="pendiente">Pendiente</option><option value="listo">Entregado</option><option value="cancelado">Cancelado</option></select></div>
+        <div class="field"><label>📋 Estado</label><select id="ped-estado"><option value="pendiente">Pendiente</option><option value="entregado">Entregado</option><option value="cancelado">Cancelado</option></select></div>
       </div>
       <div class="field"><label>📍 Dirección / notas envío</label><input id="ped-dir" placeholder="Solo si es envío"></div>
       <div class="field"><label>📝 Notas</label><textarea id="ped-notas" placeholder="Color, talla, instrucciones..."></textarea></div>
@@ -725,7 +656,7 @@ const AUMENTO = 80;
 let cu = null, selU = null, pfiltro = 'todos', vtafiltro = 'todas';
 let db = {productos:[], ventas:[], pedidos:[], inversiones:[], compras:[]};
 let fbConnected = false;
-let saveQueued  = false;   // evita guardados en cascada
+let saveQueued  = false;
 
 // ════════════════════════════════════════
 // UTILS
@@ -754,7 +685,6 @@ window.toast = toast;
 // INDICADOR CONEXIÓN
 // ════════════════════════════════════════
 function setFbStatus(state){
-  // state: 'connecting' | 'online' | 'offline'
   const dots = document.querySelectorAll('.fb-dot');
   const txts = [document.getElementById('fb-status-txt'), document.getElementById('sb-fb-txt')];
   dots.forEach(d=>{ d.className='fb-dot'; if(state!=='connecting') d.classList.add(state); });
@@ -772,17 +702,19 @@ function startFirebaseListener(){
     setFbStatus('online');
 
     if(data){
-      // Mezcla: preserva arrays, usa defaults si faltan claves
       db.productos   = data.productos   || [];
       db.ventas      = data.ventas      || [];
-      db.pedidos     = data.pedidos     || [];
+      // Convertir pedidos antiguos: si tienen estado 'listo' cambiarlo a 'entregado'
+      let pedidosRaw = data.pedidos || [];
+      db.pedidos = pedidosRaw.map(p => {
+        if(p.estado === 'listo') p.estado = 'entregado';
+        return p;
+      });
       db.inversiones = data.inversiones || [];
       db.compras     = data.compras     || [];
     }
-    // Si ya hay sesión activa, re-renderiza
     if(cu) render();
 
-    // Si es la primera carga, oculta loading
     if(document.getElementById('screen-loading').style.display !== 'none'){
       document.getElementById('screen-loading').style.display = 'none';
       document.getElementById('screen-login').style.display   = 'flex';
@@ -791,7 +723,6 @@ function startFirebaseListener(){
     console.error('Firebase error:', error);
     setFbStatus('offline');
     toast('⚠️ Error de conexión con Firebase', 'error');
-    // Aún así oculta el loading y muestra login
     document.getElementById('screen-loading').style.display = 'none';
     document.getElementById('screen-login').style.display   = 'flex';
   });
@@ -801,14 +732,10 @@ function startFirebaseListener(){
 // FIREBASE — GUARDAR
 // ════════════════════════════════════════
 function saveDB(){
-  // Muestra barra de sincronización
   const bar = document.getElementById('sync-bar');
   bar.className = 'sync-bar show syncing';
   bar.textContent = '⟳ Guardando en Firebase...';
-
-  // Clona el objeto para evitar referencias mutables
   const payload = JSON.parse(JSON.stringify(db));
-
   set(DB_REF, payload)
     .then(() => {
       bar.className = 'sync-bar show synced';
@@ -826,7 +753,7 @@ function saveDB(){
 window.saveDB = saveDB;
 
 // ════════════════════════════════════════
-// LOGIN
+// LOGIN (sin cambios)
 // ════════════════════════════════════════
 window.selPerfil = function(u){
   selU = u;
@@ -875,7 +802,7 @@ window.logout = function(){
 };
 
 // ════════════════════════════════════════
-// NAV CONFIG
+// NAV CONFIG (sin cambios)
 // ════════════════════════════════════════
 const NAV_CFG = {
   admin:[
@@ -885,7 +812,6 @@ const NAV_CFG = {
     {id:'inversion',icon:'ti-chart-bar',lbl:'Inversión'},
     {id:'productos',icon:'ti-package',lbl:'Productos'},
     {id:'compras',icon:'ti-shopping-cart',lbl:'Compras'},
-    {id:'ajustes',icon:'ti-settings',lbl:'Ajustes'},
   ],
   inversora:[
     {id:'inicio',icon:'ti-home',lbl:'Inicio'},
@@ -960,9 +886,11 @@ window.openM = function(id){
   if(id==='m-pedido'){
     document.getElementById('ped-m-title').textContent='Nuevo pedido';
     document.getElementById('ped-id').value='';
+    document.getElementById('ped-prod-id').value='';
     ['ped-cli','ped-wa','ped-prod','ped-dir','ped-notas'].forEach(i=>document.getElementById(i).value='');
     ['ped-costo','ped-pv','ped-aum','ped-saldo'].forEach(i=>document.getElementById(i).value='');
     document.getElementById('ped-total').value='';
+    document.getElementById('ped-cant').value='1';
     document.getElementById('ped-pagado').value='0';
     document.getElementById('ped-estado').value='pendiente';
     document.getElementById('ped-entrega').value='entrega';
@@ -993,14 +921,13 @@ function render(){
   const pg=document.querySelector('.page.active'); if(!pg) return;
   const id=pg.id.replace('pg-','');
   ({inicio:renderInicio,pedidos:renderPedidos,ventas:renderVentas,
-    inversion:renderInversion,productos:renderProductos,compras:renderCompras,
-    ajustes:renderAjustes
+    inversion:renderInversion,productos:renderProductos,compras:renderCompras
   }[id]||(() => {}))();
 }
 window.render = render;
 
 // ════════════════════════════════════════
-// INICIO
+// INICIO (sin cambios relevantes)
 // ════════════════════════════════════════
 function renderInicio(){
   const t=today();
@@ -1019,9 +946,9 @@ function renderInicio(){
     const p5=db.pedidos.filter(p=>p.estado==='pendiente').slice(0,5),low=db.productos.filter(p=>(parseInt(p.stock)||0)<=3);
     ex.innerHTML=`<div class="card"><div class="card-hdr">⏳ Pedidos pendientes</div>
       <table><thead><tr><th>Cliente</th><th>Producto</th><th>Dueña</th><th>Saldo</th></tr></thead><tbody>
-      ${p5.length?p5.map(p=>{const s=(p.total||0)-(p.pagado||0);return`<tr><td style="font-weight:800">${p.cli}</td><td style="font-size:11px">${(p.prod||'').slice(0,22)}</td><td><span class="badge bv">${p.duena||'?'}</span></td><td>${s>0?`<span class="badge ba">${bs(s)}</span>`:'<span class="badge bg">✅</span>'}</td></tr>`;}).join(''):`<tr><td colspan="4"><div class="empty" style="padding:20px"><i class="ti ti-check" style="font-size:24px"></i><p>Sin pendientes</p></div></td></tr>`}
+      ${p5.length?p5.map(p=>{const s=(p.total||0)-(p.pagado||0);return`<tr><td style="font-weight:800">${p.cli}</td><td style="font-size:11px">${(p.productoTexto||p.prod||'').slice(0,22)}</td><td><span class="badge bv">${p.duena||'?'}</span></td><td>${s>0?`<span class="badge ba">${bs(s)}</span>`:'<span class="badge bg">✅</span>'}</td></tr>`;}).join(''):`<tr><td colspan="4"><div class="empty" style="padding:20px"><i class="ti ti-check" style="font-size:24px"></i><p>Sin pendientes</p></div></td></tr>`}
       </tbody></table></div>
-      ${low.length?`<div class="card"><div class="card-hdr">⚠️ Stock bajo (≤3)</div><table><thead><tr><th>Producto</th><th>Stock</th><th>Dueña</th></tr></thead><tbody>${low.map(p=>`<tr><td style="font-weight:800">${p.nombre}</td><td><span class="badge br2">${p.stock}</span></td><td><span class="badge bv">${p.duena}</span></td></tr>`).join('')}</tbody></table></div>`:''}`;
+      ${low.length?`<div class="card"><div class="card-hdr">⚠️ Stock bajo (≤3)</div><tr><thead><tr><th>Producto</th><th>Stock</th><th>Dueña</th></tr></thead><tbody>${low.map(p=>`<tr><td style="font-weight:800">${p.nombre}</td><td><span class="badge br2">${p.stock}</span></td><td><span class="badge bv">${p.duena}</span></td></tr>`).join('')}</tbody></table></div>`:''}`;
   }
   if(R()==='inversora'){
     const vs=db.ventas.filter(v=>v.hermana===N()),ing=vs.reduce((s,v)=>s+v.total,0),gan=vs.reduce((s,v)=>s+(v.total-v.costo),0);
@@ -1049,7 +976,7 @@ function renderInicio(){
 }
 
 // ════════════════════════════════════════
-// PEDIDOS
+// PEDIDOS (con nuevo render y función entregar)
 // ════════════════════════════════════════
 function renderPedidos(){
   const isAdmin=R()==='admin';
@@ -1059,24 +986,31 @@ function renderPedidos(){
   const cont=document.getElementById('lista-peds');
   if(!lista.length){cont.innerHTML='<div class="empty"><i class="ti ti-clipboard-list"></i><p>No hay pedidos aquí</p></div>';return;}
   cont.innerHTML=lista.map(p=>{
-    const saldo=(p.total||0)-(p.pagado||0),pct=p.total>0?Math.min(100,Math.round(((p.pagado||0)/p.total)*100)):0;
-    const etag=p.entrega==='envio'?`<span class="badge bb">🚚 Envío</span>`:`<span class="badge bg">🤝 En mano</span>`;
-    const stag=p.estado==='listo'?`<span class="badge bg">✅ Listo</span>`:p.estado==='cancelado'?`<span class="badge br2">❌ Cancelado</span>`:`<span class="badge ba">⏳ Pendiente</span>`;
-    const aum=p.precioVenta&&p.costo?p.precioVenta-p.costo:null;
-    const waBtn=p.wa?`<a href="https://wa.me/${p.wa.replace(/\D/g,'')}" target="_blank" class="btn btn-sm btn-wa"><i class="ti ti-brand-whatsapp"></i> WhatsApp</a>`:'';
+    const cantidad = p.cantidad || 1;
+    const productoMostrar = p.productoTexto || p.prod || 'Producto sin nombre';
+    const total = p.total || (p.precioVenta * cantidad);
+    const saldo = total - (p.pagado||0);
+    const pct = total>0 ? Math.min(100, Math.round(((p.pagado||0)/total)*100)) : 0;
+    const etag = p.entrega==='envio' ? `<span class="badge bb">🚚 Envío</span>` : `<span class="badge bg">🤝 En mano</span>`;
+    let stag = '';
+    if(p.estado==='entregado') stag = `<span class="badge bg">✅ Entregado</span>`;
+    else if(p.estado==='cancelado') stag = `<span class="badge br2">❌ Cancelado</span>`;
+    else stag = `<span class="badge ba">⏳ Pendiente</span>`;
+    const aum = p.precioVenta && p.costoUnitario ? p.precioVenta - p.costoUnitario : null;
+    const waBtn = p.wa ? `<a href="https://wa.me/${p.wa.replace(/\D/g,'')}" target="_blank" class="btn btn-sm btn-wa"><i class="ti ti-brand-whatsapp"></i> WhatsApp</a>` : '';
     return `<div class="ped-card estado-${p.estado}">
       <div class="ped-top">
         <div style="flex:1;min-width:0">
           <div class="ped-client">${p.cli}</div>
           ${p.wa?`<div class="ped-wa">📱 ${p.wa}</div>`:''}
           <div class="ped-tags">${etag}${stag}<span class="badge bv">👩 ${p.duena||'?'}</span></div>
-          <div class="ped-prod">${p.prod}</div>
-          ${(p.costo||p.precioVenta)?`<div class="ped-precios"><span style="color:var(--mu)">Costo: ${bs(p.costo)}</span><span style="color:var(--p)">Venta: ${bs(p.precioVenta)}</span>${aum?`<span style="color:var(--g)">+${bs(aum)}</span>`:''}</div>`:''}
+          <div class="ped-prod">${cantidad} x ${productoMostrar} = ${bs(total)}</div>
+          ${(p.costoUnitario||p.precioVenta)?`<div class="ped-precios"><span style="color:var(--mu)">Costo unit: ${bs(p.costoUnitario)}</span><span style="color:var(--p)">Venta unit: ${bs(p.precioVenta)}</span>${aum?`<span style="color:var(--g)">+${bs(aum)}</span>`:''}</div>`:''}
           ${p.dir?`<div class="ped-detail">📍 ${p.dir}</div>`:''}
           ${p.notas?`<div class="ped-detail">📝 ${p.notas}</div>`:''}
         </div>
         <div style="text-align:right;flex-shrink:0">
-          <div style="font-size:16px;font-weight:900;color:var(--pd)">${bs(p.total)}</div>
+          <div style="font-size:16px;font-weight:900;color:var(--pd)">${bs(total)}</div>
           <div style="font-size:11px;color:var(--mu);font-weight:700">Pagado: ${bs(p.pagado||0)}</div>
           ${saldo>0?`<div style="font-size:12px;color:var(--r);font-weight:900">Falta: ${bs(saldo)}</div>`:`<div style="font-size:12px;color:var(--g);font-weight:900">✅ Pagado</div>`}
         </div>
@@ -1086,7 +1020,8 @@ function renderPedidos(){
       <div class="ped-btns">
         ${waBtn}
         ${isAdmin?`<button class="btn btn-sm btn-amber" onclick="editPed('${p.id}')"><i class="ti ti-edit"></i> Editar</button>`:''}
-        ${p.estado==='pendiente'?`<button class="btn btn-sm btn-green" onclick="chgEst('${p.id}','listo')"><i class="ti ti-check"></i> Listo</button>`:`<button class="btn btn-sm" onclick="chgEst('${p.id}','pendiente')"><i class="ti ti-refresh"></i> Reabrir</button>`}
+        ${p.estado==='pendiente' ? `<button class="btn btn-sm btn-green" onclick="entregarPedido('${p.id}')"><i class="ti ti-check"></i> Entregar</button>` : 
+          (p.estado==='entregado' ? `<button class="btn btn-sm" onclick="reabrirPedido('${p.id}')"><i class="ti ti-refresh"></i> Reabrir</button>` : '')}
         ${isAdmin?`<button class="btn btn-sm btn-danger" onclick="delPed('${p.id}')"><i class="ti ti-trash"></i></button>`:''}
       </div>
     </div>`;
@@ -1098,78 +1033,180 @@ window.filtP = function(f,el){ pfiltro=f; document.querySelectorAll('.filt-btn')
 window.pedDesdeStock = function(){
   const pid=document.getElementById('ped-prod-sel').value; if(!pid) return;
   const p=db.productos.find(x=>x.id===pid); if(!p) return;
-  document.getElementById('ped-prod').value=p.nombre+(p.codigo?' ['+p.codigo+']':'');
-  document.getElementById('ped-costo').value=p.costo;
-  document.getElementById('ped-pv').value=p.precio;
-  document.getElementById('ped-aum').value=bs(p.precio-p.costo);
-  if(p.duena&&p.duena!=='Ambas') document.getElementById('ped-duena').value=p.duena;
-  calcPedSaldo();
+  document.getElementById('ped-prod').value = p.nombre + (p.codigo?' ['+p.codigo+']':'');
+  document.getElementById('ped-prod-id').value = pid;
+  document.getElementById('ped-costo').value = p.costo;
+  document.getElementById('ped-pv').value = p.precio;
+  document.getElementById('ped-aum').value = bs(p.precio - p.costo);
+  if(p.duena && p.duena!=='Ambas') document.getElementById('ped-duena').value = p.duena;
+  calcPedTotal();
 };
 
 window.calcPedPrecio = function(){
-  const c=parseFloat(document.getElementById('ped-costo').value)||0;
-  if(c>0){document.getElementById('ped-pv').value=(c+AUMENTO).toFixed(2);document.getElementById('ped-aum').value=bs(AUMENTO);}
-  calcPedSaldo();
+  const c = parseFloat(document.getElementById('ped-costo').value)||0;
+  if(c>0){
+    document.getElementById('ped-pv').value = (c+AUMENTO).toFixed(2);
+    document.getElementById('ped-aum').value = bs(AUMENTO);
+    calcPedTotal();
+  }
 };
 
+function calcPedTotal(){
+  const cant = parseInt(document.getElementById('ped-cant').value) || 1;
+  const pv = parseFloat(document.getElementById('ped-pv').value) || 0;
+  const total = cant * pv;
+  document.getElementById('ped-total').value = total.toFixed(2);
+  calcPedSaldo();
+}
+
 function calcPedSaldo(){
-  const pv=parseFloat(document.getElementById('ped-pv').value)||0,c=parseFloat(document.getElementById('ped-costo').value)||0;
-  if(pv>0&&c>0) document.getElementById('ped-aum').value=bs(pv-c);
-  const t=parseFloat(document.getElementById('ped-total').value)||0,pg=parseFloat(document.getElementById('ped-pagado').value)||0;
-  document.getElementById('ped-saldo').value=bs(Math.max(0,t-pg));
+  const total = parseFloat(document.getElementById('ped-total').value) || 0;
+  const pagado = parseFloat(document.getElementById('ped-pagado').value) || 0;
+  document.getElementById('ped-saldo').value = bs(Math.max(0, total - pagado));
 }
 window.calcPedSaldo = calcPedSaldo;
 
 window.guardarPed = function(){
-  const cli=document.getElementById('ped-cli').value.trim(); if(!cli) return toast('Ingresa el nombre del cliente','error');
-  const prod=document.getElementById('ped-prod').value.trim(); if(!prod) return toast('Ingresa el producto','error');
-  const eid=document.getElementById('ped-id').value;
-  const pedProdSel=document.getElementById('ped-prod-sel').value;
-  const prodObj=pedProdSel?db.productos.find(x=>x.id===pedProdSel):null;
-  if(prodObj&&(parseInt(prodObj.stock)||0)<1) return toast('⚠️ Stock insuficiente para este producto','warn');
-  const p={id:eid||uid(),cli,wa:document.getElementById('ped-wa').value,prod,
-    duena:document.getElementById('ped-duena').value,
-    costo:parseFloat(document.getElementById('ped-costo').value)||0,
-    precioVenta:parseFloat(document.getElementById('ped-pv').value)||0,
-    total:parseFloat(document.getElementById('ped-total').value)||0,
-    pagado:parseFloat(document.getElementById('ped-pagado').value)||0,
-    entrega:document.getElementById('ped-entrega').value,
-    estado:document.getElementById('ped-estado').value,
-    dir:document.getElementById('ped-dir').value,
-    notas:document.getElementById('ped-notas').value,fecha:today()};
-  const idx=db.pedidos.findIndex(x=>x.id===p.id);
-  if(idx>=0) db.pedidos[idx]=p; else db.pedidos.unshift(p);
-  saveDB(); closeM('m-pedido'); toast('Pedido guardado ✓'); render();
+  const cli = document.getElementById('ped-cli').value.trim();
+  if(!cli) return toast('Ingresa el nombre del cliente','error');
+  const prodTexto = document.getElementById('ped-prod').value.trim();
+  if(!prodTexto) return toast('Ingresa el producto','error');
+  const prodId = document.getElementById('ped-prod-id').value || null;
+  const cant = parseInt(document.getElementById('ped-cant').value) || 1;
+  const pv = parseFloat(document.getElementById('ped-pv').value) || 0;
+  const costoUnit = parseFloat(document.getElementById('ped-costo').value) || 0;
+  const total = cant * pv;
+  const pagado = parseFloat(document.getElementById('ped-pagado').value) || 0;
+  
+  // Si se seleccionó producto de stock, validar que tenga al menos 1 unidad (solo advertencia)
+  if(prodId) {
+    const prod = db.productos.find(p => p.id === prodId);
+    if(prod && (parseInt(prod.stock)||0) < 1) {
+      if(!confirm('⚠️ El producto no tiene stock disponible. ¿Deseas guardar el pedido de todas formas? No se podrá entregar hasta reponer stock.')) return;
+    }
+  }
+  
+  const eid = document.getElementById('ped-id').value;
+  const pedido = {
+    id: eid || uid(),
+    cli,
+    wa: document.getElementById('ped-wa').value,
+    productoId: prodId || null,
+    productoTexto: prodTexto,
+    cantidad: cant,
+    costoUnitario: costoUnit,
+    precioVenta: pv,
+    total: total,
+    pagado: pagado,
+    duena: document.getElementById('ped-duena').value,
+    entrega: document.getElementById('ped-entrega').value,
+    estado: document.getElementById('ped-estado').value,
+    dir: document.getElementById('ped-dir').value,
+    notas: document.getElementById('ped-notas').value,
+    fecha: today()
+  };
+  const idx = db.pedidos.findIndex(x => x.id === pedido.id);
+  if(idx>=0) db.pedidos[idx] = pedido;
+  else db.pedidos.unshift(pedido);
+  saveDB();
+  closeM('m-pedido');
+  toast('Pedido guardado ✓');
+  render();
 };
 
 window.editPed = function(id){
-  const p=db.pedidos.find(x=>x.id===id); if(!p) return;
+  const p = db.pedidos.find(x=>x.id===id);
+  if(!p) return;
   openM('m-pedido');
   setTimeout(()=>{
     document.getElementById('ped-m-title').textContent='Editar pedido';
-    document.getElementById('ped-id').value=p.id;
-    document.getElementById('ped-cli').value=p.cli;
-    document.getElementById('ped-wa').value=p.wa||'';
-    document.getElementById('ped-prod').value=p.prod;
-    document.getElementById('ped-duena').value=p.duena||'Karen';
-    document.getElementById('ped-costo').value=p.costo||0;
-    document.getElementById('ped-pv').value=p.precioVenta||0;
-    document.getElementById('ped-aum').value=p.precioVenta&&p.costo?bs(p.precioVenta-p.costo):'';
-    document.getElementById('ped-total').value=p.total;
-    document.getElementById('ped-pagado').value=p.pagado||0;
-    document.getElementById('ped-saldo').value=bs(Math.max(0,p.total-(p.pagado||0)));
-    document.getElementById('ped-entrega').value=p.entrega||'entrega';
-    document.getElementById('ped-estado').value=p.estado;
-    document.getElementById('ped-dir').value=p.dir||'';
-    document.getElementById('ped-notas').value=p.notas||'';
+    document.getElementById('ped-id').value = p.id;
+    document.getElementById('ped-prod-id').value = p.productoId || '';
+    document.getElementById('ped-cli').value = p.cli;
+    document.getElementById('ped-wa').value = p.wa || '';
+    document.getElementById('ped-prod').value = p.productoTexto || p.prod || '';
+    document.getElementById('ped-duena').value = p.duena || 'Karen';
+    document.getElementById('ped-costo').value = p.costoUnitario || 0;
+    document.getElementById('ped-pv').value = p.precioVenta || 0;
+    document.getElementById('ped-cant').value = p.cantidad || 1;
+    document.getElementById('ped-total').value = p.total;
+    document.getElementById('ped-pagado').value = p.pagado || 0;
+    document.getElementById('ped-saldo').value = bs(Math.max(0, p.total - (p.pagado||0)));
+    document.getElementById('ped-entrega').value = p.entrega || 'entrega';
+    document.getElementById('ped-estado').value = p.estado;
+    document.getElementById('ped-dir').value = p.dir || '';
+    document.getElementById('ped-notas').value = p.notas || '';
+    const aum = (p.precioVenta || 0) - (p.costoUnitario || 0);
+    document.getElementById('ped-aum').value = aum>0 ? bs(aum) : '';
   },50);
 };
 
-window.chgEst = function(id,est){ const p=db.pedidos.find(x=>x.id===id); if(!p) return; p.estado=est; saveDB(); toast(est==='listo'?'Pedido marcado como listo ✓':'Pedido reabierto'); render(); };
-window.delPed = function(id){ if(!confirm('¿Eliminar pedido?')) return; db.pedidos=db.pedidos.filter(p=>p.id!==id); saveDB(); toast('Pedido eliminado','warn'); render(); };
+window.entregarPedido = function(id){
+  const ped = db.pedidos.find(p => p.id === id);
+  if(!ped) return;
+  if(ped.estado === 'entregado') return toast('Este pedido ya fue entregado', 'warn');
+  if(ped.estado === 'cancelado') return toast('No se puede entregar un pedido cancelado', 'error');
+  
+  // Si el pedido tiene producto asociado y cantidad, descontar stock y crear venta
+  if(ped.productoId && ped.cantidad && ped.cantidad > 0) {
+    const prod = db.productos.find(p => p.id === ped.productoId);
+    if(!prod) {
+      toast('El producto ya no existe en el catálogo. Solo se cambiará el estado del pedido.', 'warn');
+    } else {
+      const stockActual = parseInt(prod.stock) || 0;
+      if(stockActual < ped.cantidad) {
+        toast(`⚠️ Stock insuficiente para "${prod.nombre}". Disponible: ${stockActual}. No se puede entregar.`, 'error');
+        return;
+      }
+      // Descontar stock
+      prod.stock = stockActual - ped.cantidad;
+      // Registrar venta automática
+      const nuevaVenta = {
+        id: uid(),
+        pid: ped.productoId,
+        pnom: prod.nombre,
+        cant: ped.cantidad,
+        precio: ped.precioVenta,
+        total: ped.total,
+        costo: ped.costoUnitario * ped.cantidad,
+        hermana: ped.duena,
+        notas: `Venta automática del pedido ${ped.id} - ${ped.cli}`,
+        fecha: today()
+      };
+      db.ventas.unshift(nuevaVenta);
+      toast(`✅ Stock descontado y venta registrada automáticamente.`, 'success');
+    }
+  } else {
+    toast('Este pedido no tiene un producto vinculado al stock. Solo se marcará como entregado.', 'warn');
+  }
+  
+  ped.estado = 'entregado';
+  saveDB();
+  render();
+};
+
+window.reabrirPedido = function(id){
+  const ped = db.pedidos.find(p => p.id === id);
+  if(!ped) return;
+  if(ped.estado !== 'entregado') return toast('Solo se pueden reabrir pedidos entregados', 'warn');
+  // Opcional: aquí se podría revertir el stock y eliminar la venta asociada, pero es complejo.
+  // Por ahora solo cambia el estado.
+  ped.estado = 'pendiente';
+  saveDB();
+  toast('Pedido reabierto (stock no revertido automáticamente, ajusta manualmente si es necesario)', 'warn');
+  render();
+};
+
+window.delPed = function(id){
+  if(!confirm('¿Eliminar pedido? Esto no afectará el stock ni las ventas asociadas.')) return;
+  db.pedidos = db.pedidos.filter(p => p.id !== id);
+  saveDB();
+  toast('Pedido eliminado','warn');
+  render();
+};
 
 // ════════════════════════════════════════
-// VENTAS
+// VENTAS (con reposición de stock al eliminar)
 // ════════════════════════════════════════
 function getVtaFiltro(){
   const t=today(),d=new Date();
@@ -1265,10 +1302,23 @@ window.guardarVta = function(){
   saveDB(); closeM('m-venta'); toast('Venta registrada ✓'); render();
 };
 
-window.delVta = function(id){ if(!confirm('¿Eliminar venta?')) return; db.ventas=db.ventas.filter(v=>v.id!==id); saveDB(); toast('Venta eliminada','warn'); render(); };
+window.delVta = function(id){
+  if(!confirm('¿Eliminar venta? Se repondrá el stock del producto')) return;
+  const venta = db.ventas.find(v => v.id === id);
+  if(venta && venta.pid) {
+    const prod = db.productos.find(p => p.id === venta.pid);
+    if(prod) {
+      prod.stock = (parseInt(prod.stock) || 0) + venta.cant;
+    }
+  }
+  db.ventas = db.ventas.filter(v => v.id !== id);
+  saveDB();
+  toast('Venta eliminada y stock repuesto', 'warn');
+  render();
+};
 
 // ════════════════════════════════════════
-// INVERSIÓN
+// INVERSIÓN (sin cambios)
 // ════════════════════════════════════════
 function renderInversion(){
   const n=N(),lista=R()==='inversora'?db.inversiones.filter(x=>x.hermana===n):db.inversiones;
@@ -1302,7 +1352,7 @@ window.guardarInv = function(){
 window.delInv = function(id){ if(!confirm('¿Eliminar?')) return; db.inversiones=db.inversiones.filter(x=>x.id!==id); saveDB(); toast('Eliminado','warn'); render(); };
 
 // ════════════════════════════════════════
-// PRODUCTOS
+// PRODUCTOS (sin cambios)
 // ════════════════════════════════════════
 window.previewImg = function(input){
   const file=input.files[0]; if(!file) return;
@@ -1381,7 +1431,7 @@ window.editProd = function(id){
 window.delProd = function(id){ if(!confirm('¿Eliminar producto?')) return; db.productos=db.productos.filter(p=>p.id!==id); saveDB(); toast('Producto eliminado','warn'); render(); };
 
 // ════════════════════════════════════════
-// COMPRAS
+// COMPRAS (sin cambios)
 // ════════════════════════════════════════
 function renderCompras(){
   const bac=document.getElementById('btn-ac'); if(bac) bac.style.display='inline-flex';
@@ -1402,111 +1452,7 @@ window.guardarCompra = function(){
 window.delComp = function(id){ if(!confirm('¿Eliminar?')) return; db.compras=db.compras.filter(c=>c.id!==id); saveDB(); toast('Eliminado','warn'); render(); };
 
 // ════════════════════════════════════════
-// AJUSTES — EXPORTAR / IMPORTAR
-// ════════════════════════════════════════
-function renderAjustes(){
-  if(R()!=='admin') return;
-  // Estadísticas
-  document.getElementById('aj-n-prod').textContent = db.productos.length;
-  document.getElementById('aj-n-ped').textContent  = db.pedidos.length;
-  document.getElementById('aj-n-vta').textContent  = db.ventas.length;
-  document.getElementById('aj-n-inv').textContent  = db.inversiones.length;
-  document.getElementById('aj-n-comp').textContent = db.compras.length;
-  const kb = (JSON.stringify(db).length / 1024).toFixed(1);
-  document.getElementById('aj-size').textContent   = kb + ' KB';
-}
-
-window.exportarDB = function(){
-  if(R()!=='admin'){ toast('Sin permiso','error'); return; }
-  const payload = JSON.parse(JSON.stringify(db));
-  // Añade metadatos de exportación
-  const exportData = {
-    _exportado: new Date().toISOString(),
-    _version: 'candy-store-v1',
-    ...payload
-  };
-  const json = JSON.stringify(exportData, null, 2);
-  const blob = new Blob([json], {type:'application/json'});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href     = url;
-  a.download = `candy-store-backup-${today()}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-  toast('✓ Backup descargado correctamente');
-};
-
-window.importarDB = function(input){
-  if(R()!=='admin'){ toast('Sin permiso','error'); return; }
-  const file = input.files[0];
-  if(!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    try {
-      const data = JSON.parse(e.target.result);
-      // Validación básica
-      const tieneEstructura = 'productos' in data || 'ventas' in data || 'pedidos' in data;
-      if(!tieneEstructura) throw new Error('Archivo no válido');
-
-      const preview = document.getElementById('import-preview');
-      preview.style.display = 'block';
-      preview.innerHTML = `
-        📦 Productos: <strong>${(data.productos||[]).length}</strong> &nbsp;|&nbsp;
-        🛍️ Ventas: <strong>${(data.ventas||[]).length}</strong><br>
-        📋 Pedidos: <strong>${(data.pedidos||[]).length}</strong> &nbsp;|&nbsp;
-        💸 Inversiones: <strong>${(data.inversiones||[]).length}</strong> &nbsp;|&nbsp;
-        🛒 Compras: <strong>${(data.compras||[]).length}</strong><br><br>
-        <span style="color:#065F46">✓ Archivo válido. Confirma para importar.</span>
-      `;
-
-      // Guarda el dato parseado para confirmar luego
-      window._importPending = data;
-
-      // Muestra botón de confirmación
-      if(!document.getElementById('btn-confirmar-import')){
-        const btn = document.createElement('button');
-        btn.id        = 'btn-confirmar-import';
-        btn.className = 'btn btn-danger btn-full';
-        btn.style.marginTop = '10px';
-        btn.innerHTML = '<i class="ti ti-replace"></i> Confirmar importación (reemplaza todo)';
-        btn.onclick   = confirmarImport;
-        preview.after(btn);
-      }
-    } catch(err) {
-      toast('Archivo JSON inválido o corrupto', 'error');
-      input.value = '';
-    }
-  };
-  reader.readAsText(file);
-};
-
-function confirmarImport(){
-  if(!window._importPending){ toast('No hay archivo para importar','error'); return; }
-  if(!confirm('⚠️ ¿Seguro? Esto reemplazará TODOS los datos actuales en Firebase con los del archivo importado.')) return;
-
-  const data = window._importPending;
-  db.productos   = data.productos   || [];
-  db.ventas      = data.ventas      || [];
-  db.pedidos     = data.pedidos     || [];
-  db.inversiones = data.inversiones || [];
-  db.compras     = data.compras     || [];
-
-  saveDB();
-  window._importPending = null;
-
-  // Limpia UI de importación
-  document.getElementById('import-preview').style.display = 'none';
-  document.getElementById('import-preview').innerHTML = '';
-  const btnConf = document.getElementById('btn-confirmar-import');
-  if(btnConf) btnConf.remove();
-  document.getElementById('import-file').value = '';
-
-  toast('✓ Base de datos importada correctamente');
-  render();
-}
-
-// ════════════════════════════════════════
-// INIT — arranca el listener de Firebase
+// INIT
 // ════════════════════════════════════════
 setFbStatus('connecting');
 startFirebaseListener();
