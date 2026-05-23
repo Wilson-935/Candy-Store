@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -31,6 +30,17 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);font-s
 ::-webkit-scrollbar{width:3px;height:3px}
 ::-webkit-scrollbar-thumb{background:var(--br);border-radius:4px}
 
+/* ═══════════════ LOADING SCREEN ═══════════════ */
+#screen-loading{
+  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#2D1B69 0%,#4C1D95 40%,#1E40AF 100%);
+  z-index:2000;flex-direction:column;gap:16px;
+}
+.loading-logo{font-family:'Pacifico',cursive;font-size:32px;color:#fff}
+.loading-spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+.loading-txt{font-size:12px;color:rgba(255,255,255,.6);font-weight:800;letter-spacing:1px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
 /* ═══════════════ TOAST ═══════════════ */
 #toast-wrap{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
 .toast{background:#1E1B4B;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:700;
@@ -43,7 +53,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);font-s
 
 /* ═══════════════ LOGIN ═══════════════ */
 #screen-login{
-  position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  position:fixed;inset:0;display:none;align-items:center;justify-content:center;
   background:linear-gradient(135deg,#2D1B69 0%,#4C1D95 40%,#1E40AF 100%);
   padding:16px;overflow-y:auto;z-index:1000
 }
@@ -79,11 +89,15 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);font-s
   font-family:'Nunito',sans-serif;box-shadow:0 4px 20px rgba(139,92,246,.4);letter-spacing:.5px}
 .btn-enter:active{transform:scale(.98)}
 .login-err{color:var(--r);font-size:12px;text-align:center;margin-top:8px;min-height:18px;font-weight:800}
+.firebase-status{display:flex;align-items:center;gap:6px;justify-content:center;margin-top:12px;font-size:11px;font-weight:800;color:var(--mu)}
+.fb-dot{width:8px;height:8px;border-radius:50%;background:var(--a);animation:pulse 1.5s infinite}
+.fb-dot.online{background:var(--g);animation:none}
+.fb-dot.offline{background:var(--r);animation:none}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
 /* ═══════════════ APP SHELL ═══════════════ */
 #screen-app{position:fixed;inset:0;display:none;flex-direction:column}
 
-/* TOPBAR mobile */
 .topbar{height:var(--topbar-h);background:linear-gradient(135deg,var(--pdd),var(--pd),var(--b));
   display:flex;align-items:center;justify-content:space-between;padding:0 16px;
   box-shadow:0 2px 16px rgba(0,0,0,.2);flex-shrink:0;position:relative;z-index:10}
@@ -99,15 +113,15 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);font-s
 .btn-out:hover{color:#fff}
 
 /* SYNC */
-.sync-bar{height:0;background:linear-gradient(90deg,var(--g),#059669);overflow:hidden;
-  transition:height .3s;display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
+.sync-bar{height:0;overflow:hidden;transition:height .3s;display:flex;align-items:center;
+  justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
 .sync-bar.show{height:24px}
+.sync-bar.syncing{background:linear-gradient(90deg,var(--a),#D97706)}
+.sync-bar.synced{background:linear-gradient(90deg,var(--g),#059669)}
+.sync-bar.error{background:linear-gradient(90deg,var(--r),#DC2626)}
 
-/* MAIN AREA */
 .app-body{flex:1;display:flex;overflow:hidden;position:relative}
 
-/* SIDEBAR desktop */
 .sidebar{width:var(--sidebar-w);background:linear-gradient(180deg,var(--pdd) 0%,var(--pd) 60%,#2563EB 100%);
   display:flex;flex-direction:column;overflow-y:auto;flex-shrink:0;box-shadow:4px 0 24px rgba(0,0,0,.15)}
 .sb-logo-wrap{padding:20px 16px 14px;border-bottom:1px solid rgba(255,255,255,.12)}
@@ -124,18 +138,20 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);font-s
 .sni:hover{background:rgba(255,255,255,.1);color:#fff}
 .sni.active{background:rgba(255,255,255,.18);color:#fff;border-left-color:#A78BFA}
 .sni i{font-size:18px;flex-shrink:0}
+/* Indicador Firebase en sidebar */
+.sb-firebase{margin:8px 12px 0;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;gap:8px;font-size:11px;
+  color:rgba(255,255,255,.7);font-weight:700}
 .sb-logout{margin:auto 12px 12px;padding:10px;background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.25);
   color:rgba(255,255,255,.85);border-radius:10px;font-size:12px;cursor:pointer;
   font-family:'Nunito',sans-serif;font-weight:800;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
 .sb-logout:hover{background:rgba(255,255,255,.22);color:#fff}
 
-/* CONTENT */
 .content{flex:1;overflow-y:auto;overflow-x:hidden;padding:16px;padding-bottom:calc(var(--bnav-h) + 16px)}
 .page{display:none}.page.active{display:block}
 .pg-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:10px;flex-wrap:wrap}
 .pg-title{font-family:'Pacifico',cursive;font-size:22px;color:var(--pd);line-height:1}
 
-/* BOTTOM NAV mobile */
 .bnav{height:var(--bnav-h);background:#fff;border-top:2px solid var(--pl);
   display:flex;justify-content:space-around;align-items:center;padding:0 4px;
   position:relative;z-index:10;box-shadow:0 -4px 24px rgba(139,92,246,.12);flex-shrink:0}
@@ -300,17 +316,13 @@ tr:hover td{background:var(--pll)}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
 /* ═══════════════ RESPONSIVE ═══════════════ */
-/* Mobile first — sidebar hidden, topbar + bnav visible */
 .sidebar{display:none}
 .topbar{display:flex}
 .bnav{display:flex}
 .content{padding-bottom:calc(var(--bnav-h) + 16px)}
-
-/* Inversión cards: apiladas en móvil */
 .herm-grid{grid-template-columns:1fr}
 .herm-stats{grid-template-columns:repeat(4,1fr)}
 
-/* Tablet */
 @media(min-width:640px){
   .prod-grid{grid-template-columns:repeat(3,1fr)}
   .metrics{grid-template-columns:repeat(4,1fr)}
@@ -322,12 +334,9 @@ tr:hover td{background:var(--pll)}
   .modal-hdr{border-radius:20px 20px 0 0}
 }
 
-/* Desktop */
 @media(min-width:900px){
-  /* App shell: row — sidebar izquierda + contenido derecha */
   #screen-app{flex-direction:row}
   .topbar{display:none}
-  /* app-body ocupa todo el espacio restante a la derecha del sidebar */
   .app-body{flex:1;flex-direction:column;overflow:hidden}
   .sidebar{display:flex;width:var(--sidebar-w);min-width:var(--sidebar-w)}
   .bnav{display:none}
@@ -349,6 +358,13 @@ tr:hover td{background:var(--pll)}
 <body>
 
 <div id="toast-wrap"></div>
+
+<!-- ═══════════════ LOADING ═══════════════ -->
+<div id="screen-loading">
+  <div class="loading-logo">Candy Store</div>
+  <div class="loading-spinner"></div>
+  <div class="loading-txt">Conectando con Firebase...</div>
+</div>
 
 <!-- ═══════════════ LOGIN ═══════════════ -->
 <div id="screen-login">
@@ -376,21 +392,27 @@ tr:hover td{background:var(--pll)}
       <button class="btn-enter" onclick="doLogin()">Entrar →</button>
     </div>
     <div class="login-err" id="lerr"></div>
+    <div class="firebase-status">
+      <div class="fb-dot" id="fb-dot"></div>
+      <span id="fb-status-txt">Conectando...</span>
+    </div>
   </div>
 </div>
 
 <!-- ═══════════════ APP ═══════════════ -->
 <div id="screen-app">
-  <!-- SIDEBAR desktop -->
   <div class="sidebar" id="sidebar">
     <div class="sb-logo-wrap"><div class="sb-logo">Candy Store</div><div class="sb-sub">GESTIÓN INTERNA</div></div>
     <div class="sb-user"><div class="sb-av" id="sb-av">W</div><div><div class="sb-uname" id="sb-name">Wilson</div><div class="sb-urole" id="sb-role">Admin</div></div></div>
     <div id="sb-nav"></div>
+    <div class="sb-firebase">
+      <div class="fb-dot" id="sb-fb-dot"></div>
+      <span id="sb-fb-txt">Firebase</span>
+    </div>
     <button class="sb-logout" onclick="logout()"><i class="ti ti-logout"></i> Cerrar sesión</button>
   </div>
 
   <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0">
-    <!-- TOPBAR mobile -->
     <div class="topbar">
       <div class="topbar-logo">Candy Store</div>
       <div class="topbar-r">
@@ -398,7 +420,7 @@ tr:hover td{background:var(--pll)}
         <button class="btn-out" onclick="logout()"><i class="ti ti-logout"></i></button>
       </div>
     </div>
-    <div class="sync-bar" id="sync-bar">✓ Sincronizado</div>
+    <div class="sync-bar" id="sync-bar">Sincronizando...</div>
 
     <div class="app-body">
       <div class="content" id="content">
@@ -464,10 +486,9 @@ tr:hover td{background:var(--pll)}
           </div></div>
         </div>
 
-      </div><!-- /content -->
-    </div><!-- /app-body -->
+      </div>
+    </div>
 
-    <!-- BOTTOM NAV mobile -->
     <div class="bnav" id="bnav"></div>
   </div>
 </div>
@@ -497,7 +518,7 @@ tr:hover td{background:var(--pll)}
         <div class="field"><label>📈 Aumento</label><input id="ped-aum" readonly></div>
       </div>
       <div class="grid2">
-        <div class="field"><label>💵 Total cobrado (Bs.)</label><input id="ped-total" type="number" min="0" step="0.01" oninput="calcPedSaldo()" placeholder="0.00"></div>
+        <div class="field"><label>💵 Total cobrado (Bs.)</label><input id="ped-total" type="number" min="0" step="0.01" placeholder="0.00"></div>
         <div class="field"><label>✅ Adelanto (Bs.)</label><input id="ped-pagado" type="number" min="0" step="0.01" value="0" oninput="calcPedSaldo()"></div>
       </div>
       <div class="field"><label>⏳ Saldo pendiente</label><input id="ped-saldo" readonly></div>
@@ -595,40 +616,147 @@ tr:hover td{background:var(--pll)}
   </div>
 </div>
 
-<script>
-// ═══════════════════════════════
-// CAMBIA AQUÍ LOS PINes
-const PINS={wilson:'1234',karen:'1111',samantha:'2222',mama:'3333'};
-// ═══════════════════════════════
-const NAMES={wilson:'Wilson',karen:'Karen',samantha:'Samantha',mama:'Mamá'};
-const ROLES={wilson:'admin',karen:'inversora',samantha:'inversora',mama:'operadora'};
-const AUMENTO=80;
-const KEY='candy-store-v5';
+<!-- ════════════════════════════════════════════
+     FIREBASE SDK (módulos ESM via CDN)
+════════════════════════════════════════════ -->
+<script type="module">
+// ── Firebase imports ──
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getDatabase, ref, onValue, set, get
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-let cu=null,selU=null,pfiltro='todos',vtafiltro='todas',syncT=null;
-let db={productos:[],ventas:[],pedidos:[],inversiones:[],compras:[]};
+// ── Config ──
+const firebaseConfig = {
+  apiKey: "AIzaSyA-2D8gZKUsaoniqnGmnowqU3GaWUMi5Ek",
+  authDomain: "candy-store-247.firebaseapp.com",
+  databaseURL: "https://candy-store-247-default-rtdb.firebaseio.com",
+  projectId: "candy-store-247",
+  storageBucket: "candy-store-247.firebasestorage.app",
+  messagingSenderId: "713005280377",
+  appId: "1:713005280377:web:a7d878fe451486dfa5f8a8"
+};
 
-// ── utils ──
-const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
-const bs=n=>'Bs. '+parseFloat(n||0).toFixed(2);
-const today=()=>new Date().toISOString().slice(0,10);
-const fmtD=d=>{try{return new Date(d+'T12:00:00').toLocaleDateString('es-BO',{day:'2-digit',month:'short'});}catch(e){return d||''}};
-const R=()=>ROLES[cu]||'';
-const N=()=>NAMES[cu]||'';
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+const DB_REF = ref(database, 'candy-store/data');
 
-// ── TOAST ──
-function toast(msg,type='success'){
-  const el=document.createElement('div');
-  el.className=`toast ${type}`;
-  el.textContent=(type==='success'?'✓ ':type==='error'?'✕ ':'⚠ ')+msg;
+// ════════════════════════════════════════
+// ESTADO GLOBAL
+// ════════════════════════════════════════
+const PINS   = {wilson:'1234', karen:'1111', samantha:'2222', mama:'3333'};
+const NAMES  = {wilson:'Wilson', karen:'Karen', samantha:'Samantha', mama:'Mamá'};
+const ROLES  = {wilson:'admin', karen:'inversora', samantha:'inversora', mama:'operadora'};
+const AUMENTO = 80;
+
+let cu = null, selU = null, pfiltro = 'todos', vtafiltro = 'todas';
+let db = {productos:[], ventas:[], pedidos:[], inversiones:[], compras:[]};
+let fbConnected = false;
+let saveQueued  = false;   // evita guardados en cascada
+
+// ════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════
+const uid   = () => Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+const bs    = n  => 'Bs. ' + parseFloat(n||0).toFixed(2);
+const today = () => new Date().toISOString().slice(0,10);
+const fmtD  = d  => { try{ return new Date(d+'T12:00:00').toLocaleDateString('es-BO',{day:'2-digit',month:'short'}); }catch(e){return d||''} };
+const R     = () => ROLES[cu]  || '';
+const N     = () => NAMES[cu]  || '';
+
+// ════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════
+function toast(msg, type='success'){
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = (type==='success'?'✓ ':type==='error'?'✕ ':'⚠ ') + msg;
   document.getElementById('toast-wrap').appendChild(el);
-  requestAnimationFrame(()=>{requestAnimationFrame(()=>el.classList.add('show'))});
-  setTimeout(()=>{el.classList.remove('show');setTimeout(()=>el.remove(),400)},2800);
+  requestAnimationFrame(()=>{ requestAnimationFrame(()=>el.classList.add('show')); });
+  setTimeout(()=>{ el.classList.remove('show'); setTimeout(()=>el.remove(),400); }, 2800);
+}
+window.toast = toast;
+
+// ════════════════════════════════════════
+// INDICADOR CONEXIÓN
+// ════════════════════════════════════════
+function setFbStatus(state){
+  // state: 'connecting' | 'online' | 'offline'
+  const dots = document.querySelectorAll('.fb-dot');
+  const txts = [document.getElementById('fb-status-txt'), document.getElementById('sb-fb-txt')];
+  dots.forEach(d=>{ d.className='fb-dot'; if(state!=='connecting') d.classList.add(state); });
+  const label = state==='online'?'En línea':state==='offline'?'Sin conexión':'Conectando...';
+  txts.forEach(t=>{ if(t) t.textContent=label; });
+  fbConnected = (state==='online');
 }
 
-// ── LOGIN ──
-function selPerfil(u){
-  selU=u;
+// ════════════════════════════════════════
+// FIREBASE — LISTENER EN TIEMPO REAL
+// ════════════════════════════════════════
+function startFirebaseListener(){
+  onValue(DB_REF, (snapshot) => {
+    const data = snapshot.val();
+    setFbStatus('online');
+
+    if(data){
+      // Mezcla: preserva arrays, usa defaults si faltan claves
+      db.productos   = data.productos   || [];
+      db.ventas      = data.ventas      || [];
+      db.pedidos     = data.pedidos     || [];
+      db.inversiones = data.inversiones || [];
+      db.compras     = data.compras     || [];
+    }
+    // Si ya hay sesión activa, re-renderiza
+    if(cu) render();
+
+    // Si es la primera carga, oculta loading
+    if(document.getElementById('screen-loading').style.display !== 'none'){
+      document.getElementById('screen-loading').style.display = 'none';
+      document.getElementById('screen-login').style.display   = 'flex';
+    }
+  }, (error) => {
+    console.error('Firebase error:', error);
+    setFbStatus('offline');
+    toast('⚠️ Error de conexión con Firebase', 'error');
+    // Aún así oculta el loading y muestra login
+    document.getElementById('screen-loading').style.display = 'none';
+    document.getElementById('screen-login').style.display   = 'flex';
+  });
+}
+
+// ════════════════════════════════════════
+// FIREBASE — GUARDAR
+// ════════════════════════════════════════
+function saveDB(){
+  // Muestra barra de sincronización
+  const bar = document.getElementById('sync-bar');
+  bar.className = 'sync-bar show syncing';
+  bar.textContent = '⟳ Guardando en Firebase...';
+
+  // Clona el objeto para evitar referencias mutables
+  const payload = JSON.parse(JSON.stringify(db));
+
+  set(DB_REF, payload)
+    .then(() => {
+      bar.className = 'sync-bar show synced';
+      bar.textContent = '✓ Guardado en Firebase';
+      setTimeout(()=> bar.classList.remove('show'), 2200);
+    })
+    .catch(err => {
+      console.error('Error guardando:', err);
+      bar.className = 'sync-bar show error';
+      bar.textContent = '✕ Error al guardar';
+      setTimeout(()=> bar.classList.remove('show'), 3000);
+      toast('Error al guardar en Firebase', 'error');
+    });
+}
+window.saveDB = saveDB;
+
+// ════════════════════════════════════════
+// LOGIN
+// ════════════════════════════════════════
+window.selPerfil = function(u){
+  selU = u;
   document.querySelectorAll('.pfbtn').forEach(b=>b.classList.remove('sel'));
   event.currentTarget.classList.add('sel');
   document.getElementById('lerr').textContent='';
@@ -636,54 +764,47 @@ function selPerfil(u){
   document.getElementById('step-perfil').style.display='none';
   document.getElementById('step-pin').style.display='block';
   setTimeout(()=>document.getElementById('p0').focus(),80);
-}
-function goBack(){
+};
+
+window.goBack = function(){
   document.getElementById('step-pin').style.display='none';
   document.getElementById('step-perfil').style.display='block';
   document.getElementById('lerr').textContent='';
   selU=null;
-}
-function pnext(i){
+};
+
+window.pnext = function(i){
   const v=document.getElementById('p'+i).value;
-  if(/^\d$/.test(v)&&i<3)document.getElementById('p'+(i+1)).focus();
-  else if(v&&!/^\d$/.test(v))document.getElementById('p'+i).value='';
-}
-function doLogin(){
-  if(!selU){document.getElementById('lerr').textContent='Elige un perfil primero';return;}
+  if(/^\d$/.test(v)&&i<3) document.getElementById('p'+(i+1)).focus();
+  else if(v&&!/^\d$/.test(v)) document.getElementById('p'+i).value='';
+};
+
+window.doLogin = function(){
+  if(!selU){ document.getElementById('lerr').textContent='Elige un perfil primero'; return; }
   const pin=['p0','p1','p2','p3'].map(id=>document.getElementById(id).value).join('');
-  if(pin.length<4){document.getElementById('lerr').textContent='Ingresa los 4 dígitos';return;}
-  if(pin===PINS[selU]){cu=selU;startApp();}
+  if(pin.length<4){ document.getElementById('lerr').textContent='Ingresa los 4 dígitos'; return; }
+  if(pin===PINS[selU]){ cu=selU; startApp(); }
   else{
     document.getElementById('lerr').textContent='PIN incorrecto, intenta de nuevo';
     ['p0','p1','p2','p3'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('p0').focus();
   }
-}
-function logout(){
-  cu=null;selU=null;clearInterval(syncT);
+};
+
+window.logout = function(){
+  cu=null; selU=null;
   document.getElementById('screen-app').style.display='none';
   document.getElementById('screen-login').style.display='flex';
   document.getElementById('step-pin').style.display='none';
   document.getElementById('step-perfil').style.display='block';
   document.querySelectorAll('.pfbtn').forEach(b=>b.classList.remove('sel'));
   document.getElementById('lerr').textContent='';
-}
+};
 
-// ── DB ──
-function loadDB(){
-  try{const s=localStorage.getItem(KEY);if(s)db=JSON.parse(s);}catch(e){}
-}
-function saveDB(){
-  try{localStorage.setItem(KEY,JSON.stringify(db));showSync();}catch(e){}
-}
-function showSync(){
-  const b=document.getElementById('sync-bar');
-  b.classList.add('show');
-  setTimeout(()=>b.classList.remove('show'),2000);
-}
-
-// ── NAV CONFIG ──
-const NAV_CFG={
+// ════════════════════════════════════════
+// NAV CONFIG
+// ════════════════════════════════════════
+const NAV_CFG = {
   admin:[
     {id:'inicio',icon:'ti-home',lbl:'Inicio'},
     {id:'pedidos',icon:'ti-clipboard-list',lbl:'Pedidos'},
@@ -709,9 +830,10 @@ const NAV_CFG={
   ]
 };
 
-// ── START ──
+// ════════════════════════════════════════
+// START APP
+// ════════════════════════════════════════
 function startApp(){
-  loadDB();
   document.getElementById('screen-login').style.display='none';
   document.getElementById('screen-app').style.display='flex';
   const n=N();
@@ -732,27 +854,29 @@ function buildNav(){
   ).join('');
 }
 
-function nav(pg){
+window.nav = function(pg){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.bni,.sni').forEach(b=>b.classList.remove('active'));
-  const p=document.getElementById('pg-'+pg);if(p)p.classList.add('active');
-  const bn=document.getElementById('bn-'+pg);if(bn)bn.classList.add('active');
-  const sn=document.getElementById('sn-'+pg);if(sn)sn.classList.add('active');
+  const p=document.getElementById('pg-'+pg); if(p)p.classList.add('active');
+  const bn=document.getElementById('bn-'+pg); if(bn)bn.classList.add('active');
+  const sn=document.getElementById('sn-'+pg); if(sn)sn.classList.add('active');
   render();
-}
+};
 
-// ── MODALS ──
-function openM(id){
+// ════════════════════════════════════════
+// MODALS
+// ════════════════════════════════════════
+window.openM = function(id){
   if(id==='m-venta'){
     document.getElementById('vta-prod').innerHTML='<option value="">— seleccionar —</option>'+
       db.productos.map(p=>`<option value="${p.id}">${p.codigo?'['+p.codigo+'] ':''} ${p.nombre} · Stock:${p.stock}</option>`).join('');
-    if(R()==='inversora')document.getElementById('vta-hermana').value=N();
+    if(R()==='inversora') document.getElementById('vta-hermana').value=N();
     document.getElementById('vta-stock-warn').style.display='none';
   }
   if(id==='m-compra'){
     document.getElementById('comp-prod').innerHTML='<option value="">— seleccionar —</option>'+
       db.productos.map(p=>`<option value="${p.id}">${p.nombre}</option>`).join('');
-    if(R()==='inversora')document.getElementById('comp-herm').value=N();
+    if(R()==='inversora') document.getElementById('comp-herm').value=N();
   }
   if(id==='m-inversion'){
     document.getElementById('inv-fecha').value=today();
@@ -784,23 +908,30 @@ function openM(id){
     const prev=document.getElementById('prod-img-prev');prev.src='';prev.style.display='none';
   }
   document.getElementById(id).classList.add('open');
-}
-function closeM(id){document.getElementById(id).classList.remove('open');}
+};
 
-// ── RENDER ROUTER ──
+window.closeM = function(id){ document.getElementById(id).classList.remove('open'); };
+
+// ════════════════════════════════════════
+// RENDER ROUTER
+// ════════════════════════════════════════
 function render(){
-  const pg=document.querySelector('.page.active');if(!pg)return;
+  const pg=document.querySelector('.page.active'); if(!pg) return;
   const id=pg.id.replace('pg-','');
   ({inicio:renderInicio,pedidos:renderPedidos,ventas:renderVentas,
-    inversion:renderInversion,productos:renderProductos,compras:renderCompras}[id]||(() => {}))();
+    inversion:renderInversion,productos:renderProductos,compras:renderCompras
+  }[id]||(() => {}))();
 }
+window.render = render;
 
-// ── INICIO ──
+// ════════════════════════════════════════
+// INICIO
+// ════════════════════════════════════════
 function renderInicio(){
   const t=today();
   document.getElementById('ini-title').textContent='Hola, '+N()+' ✨';
   document.getElementById('ini-date').textContent=new Date().toLocaleDateString('es-BO',{weekday:'long',day:'numeric',month:'long'});
-  const m=document.getElementById('ini-metrics'),ex=document.getElementById('ini-extra');
+  const m=document.getElementById('ini-metrics'), ex=document.getElementById('ini-extra');
 
   if(R()==='admin'){
     const vh=db.ventas.filter(v=>v.fecha===t),ih=vh.reduce((s,v)=>s+v.total,0),gh=vh.reduce((s,v)=>s+(v.total-v.costo),0);
@@ -842,12 +973,14 @@ function renderInicio(){
   }
 }
 
-// ── PEDIDOS ──
+// ════════════════════════════════════════
+// PEDIDOS
+// ════════════════════════════════════════
 function renderPedidos(){
   const isAdmin=R()==='admin';
-  const bnp=document.getElementById('btn-np');if(bnp)bnp.style.display='inline-flex';
+  const bnp=document.getElementById('btn-np'); if(bnp) bnp.style.display='inline-flex';
   let lista=[...db.pedidos];
-  if(pfiltro!=='todos')lista=lista.filter(p=>p.estado===pfiltro);
+  if(pfiltro!=='todos') lista=lista.filter(p=>p.estado===pfiltro);
   const cont=document.getElementById('lista-peds');
   if(!lista.length){cont.innerHTML='<div class="empty"><i class="ti ti-clipboard-list"></i><p>No hay pedidos aquí</p></div>';return;}
   cont.innerHTML=lista.map(p=>{
@@ -884,37 +1017,41 @@ function renderPedidos(){
     </div>`;
   }).join('');
 }
-function filtP(f,el){pfiltro=f;document.querySelectorAll('.filt-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderPedidos();}
-function pedDesdeStock(){
-  const pid=document.getElementById('ped-prod-sel').value;
-  if(!pid)return;
-  const p=db.productos.find(x=>x.id===pid);if(!p)return;
+
+window.filtP = function(f,el){ pfiltro=f; document.querySelectorAll('.filt-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); renderPedidos(); };
+
+window.pedDesdeStock = function(){
+  const pid=document.getElementById('ped-prod-sel').value; if(!pid) return;
+  const p=db.productos.find(x=>x.id===pid); if(!p) return;
   document.getElementById('ped-prod').value=p.nombre+(p.codigo?' ['+p.codigo+']':'');
   document.getElementById('ped-costo').value=p.costo;
   document.getElementById('ped-pv').value=p.precio;
   document.getElementById('ped-aum').value=bs(p.precio-p.costo);
-  if(p.duena&&p.duena!=='Ambas')document.getElementById('ped-duena').value=p.duena;
+  if(p.duena&&p.duena!=='Ambas') document.getElementById('ped-duena').value=p.duena;
   calcPedSaldo();
-}
-function calcPedPrecio(){
+};
+
+window.calcPedPrecio = function(){
   const c=parseFloat(document.getElementById('ped-costo').value)||0;
   if(c>0){document.getElementById('ped-pv').value=(c+AUMENTO).toFixed(2);document.getElementById('ped-aum').value=bs(AUMENTO);}
   calcPedSaldo();
-}
+};
+
 function calcPedSaldo(){
   const pv=parseFloat(document.getElementById('ped-pv').value)||0,c=parseFloat(document.getElementById('ped-costo').value)||0;
-  if(pv>0&&c>0)document.getElementById('ped-aum').value=bs(pv-c);
+  if(pv>0&&c>0) document.getElementById('ped-aum').value=bs(pv-c);
   const t=parseFloat(document.getElementById('ped-total').value)||0,pg=parseFloat(document.getElementById('ped-pagado').value)||0;
   document.getElementById('ped-saldo').value=bs(Math.max(0,t-pg));
 }
-function guardarPed(){
-  const cli=document.getElementById('ped-cli').value.trim();if(!cli)return toast('Ingresa el nombre del cliente','error');
-  const prod=document.getElementById('ped-prod').value.trim();if(!prod)return toast('Ingresa el producto','error');
+window.calcPedSaldo = calcPedSaldo;
+
+window.guardarPed = function(){
+  const cli=document.getElementById('ped-cli').value.trim(); if(!cli) return toast('Ingresa el nombre del cliente','error');
+  const prod=document.getElementById('ped-prod').value.trim(); if(!prod) return toast('Ingresa el producto','error');
   const eid=document.getElementById('ped-id').value;
-  const cant=1;
   const pedProdSel=document.getElementById('ped-prod-sel').value;
   const prodObj=pedProdSel?db.productos.find(x=>x.id===pedProdSel):null;
-  if(prodObj&&(parseInt(prodObj.stock)||0)<cant){return toast('⚠️ Stock insuficiente para este producto','warn');}
+  if(prodObj&&(parseInt(prodObj.stock)||0)<1) return toast('⚠️ Stock insuficiente para este producto','warn');
   const p={id:eid||uid(),cli,wa:document.getElementById('ped-wa').value,prod,
     duena:document.getElementById('ped-duena').value,
     costo:parseFloat(document.getElementById('ped-costo').value)||0,
@@ -926,11 +1063,12 @@ function guardarPed(){
     dir:document.getElementById('ped-dir').value,
     notas:document.getElementById('ped-notas').value,fecha:today()};
   const idx=db.pedidos.findIndex(x=>x.id===p.id);
-  if(idx>=0)db.pedidos[idx]=p;else db.pedidos.unshift(p);
-  saveDB();closeM('m-pedido');toast('Pedido guardado ✓');render();
-}
-function editPed(id){
-  const p=db.pedidos.find(x=>x.id===id);if(!p)return;
+  if(idx>=0) db.pedidos[idx]=p; else db.pedidos.unshift(p);
+  saveDB(); closeM('m-pedido'); toast('Pedido guardado ✓'); render();
+};
+
+window.editPed = function(id){
+  const p=db.pedidos.find(x=>x.id===id); if(!p) return;
   openM('m-pedido');
   setTimeout(()=>{
     document.getElementById('ped-m-title').textContent='Editar pedido';
@@ -950,14 +1088,17 @@ function editPed(id){
     document.getElementById('ped-dir').value=p.dir||'';
     document.getElementById('ped-notas').value=p.notas||'';
   },50);
-}
-function chgEst(id,est){const p=db.pedidos.find(x=>x.id===id);if(!p)return;p.estado=est;saveDB();toast(est==='listo'?'Pedido marcado como listo ✓':'Pedido reabierto');render();}
-function delPed(id){if(!confirm('¿Eliminar pedido?'))return;db.pedidos=db.pedidos.filter(p=>p.id!==id);saveDB();toast('Pedido eliminado','warn');render();}
+};
 
-// ── VENTAS ──
+window.chgEst = function(id,est){ const p=db.pedidos.find(x=>x.id===id); if(!p) return; p.estado=est; saveDB(); toast(est==='listo'?'Pedido marcado como listo ✓':'Pedido reabierto'); render(); };
+window.delPed = function(id){ if(!confirm('¿Eliminar pedido?')) return; db.pedidos=db.pedidos.filter(p=>p.id!==id); saveDB(); toast('Pedido eliminado','warn'); render(); };
+
+// ════════════════════════════════════════
+// VENTAS
+// ════════════════════════════════════════
 function getVtaFiltro(){
   const t=today(),d=new Date();
-  if(vtafiltro==='hoy')return v=>v.fecha===t;
+  if(vtafiltro==='hoy') return v=>v.fecha===t;
   if(vtafiltro==='semana'){
     const ini=new Date(d);ini.setDate(d.getDate()-d.getDay());
     const iniS=ini.toISOString().slice(0,10);
@@ -969,10 +1110,11 @@ function getVtaFiltro(){
   }
   return ()=>true;
 }
-function filtVta(f,el){vtafiltro=f;document.querySelectorAll('.filt-btn').forEach(b=>b.classList.remove('active'));el.classList.add('active');renderVentas();}
+
+window.filtVta = function(f,el){ vtafiltro=f; document.querySelectorAll('.filt-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); renderVentas(); };
+
 function renderVentas(){
-  const bnv=document.getElementById('btn-nv');
-  if(bnv)bnv.style.display='inline-flex';
+  const bnv=document.getElementById('btn-nv'); if(bnv) bnv.style.display='inline-flex';
   const filt=getVtaFiltro();
   const lista=(R()==='inversora'?db.ventas.filter(v=>v.hermana===N()):db.ventas).filter(filt);
   const rc=document.getElementById('res-herm');
@@ -996,7 +1138,7 @@ function renderVentas(){
     const vs=db.ventas.filter(v=>v.hermana===N()&&filt(v));
     const ing=vs.reduce((s,v)=>s+v.total,0),gan=vs.reduce((s,v)=>s+(v.total-v.costo),0);
     const inv=db.inversiones.filter(x=>x.hermana===N()).reduce((s,x)=>s+x.monto,0);
-    rc.innerHTML=`<div class="herm-card hc-a" >
+    rc.innerHTML=`<div class="herm-card hc-a">
       <div class="herm-name"><i class="ti ti-user-circle" style="font-size:18px"></i>Mis ventas — ${N()}</div>
       <div class="herm-stats">
         <div class="hstat"><div class="hstat-val">${bs(ing)}</div><div class="hstat-lbl">Ventas</div></div>
@@ -1004,7 +1146,7 @@ function renderVentas(){
         <div class="hstat"><div class="hstat-val" style="color:${(gan-inv)>=0?'var(--g)':'var(--r)'}">${bs(gan-inv)}</div><div class="hstat-lbl">Neto</div></div>
       </div></div>`;
   }
-  const vc=document.getElementById('vta-count');if(vc)vc.textContent=lista.length+' registros';
+  const vc=document.getElementById('vta-count'); if(vc) vc.textContent=lista.length+' registros';
   const tb=document.getElementById('tb-ventas');
   if(!lista.length){tb.innerHTML=`<tr><td colspan="7"><div class="empty" style="padding:24px"><i class="ti ti-shopping-bag"></i><p>Sin ventas en este período</p></div></td></tr>`;return;}
   tb.innerHTML=lista.map(v=>`<tr>
@@ -1017,34 +1159,42 @@ function renderVentas(){
     <td>${R()==='admin'?`<button class="btn btn-xs btn-danger" onclick="delVta('${v.id}')"><i class="ti ti-trash"></i></button>`:''}</td>
   </tr>`).join('');
 }
-function autoVta(){
+
+window.autoVta = function(){
   const pid=document.getElementById('vta-prod').value,p=db.productos.find(x=>x.id===pid);
   const warn=document.getElementById('vta-stock-warn');
   if(p){
     document.getElementById('vta-precio').value=p.precio;
-    if(R()==='admin'&&(p.duena==='Karen'||p.duena==='Samantha'))document.getElementById('vta-hermana').value=p.duena;
+    if(R()==='admin'&&(p.duena==='Karen'||p.duena==='Samantha')) document.getElementById('vta-hermana').value=p.duena;
     if((parseInt(p.stock)||0)<=3){warn.style.display='block';warn.textContent=`⚠️ Stock bajo: solo quedan ${p.stock} unidades`;}
     else warn.style.display='none';
     calcVta();
   } else warn.style.display='none';
-}
+};
+
 function calcVta(){
   const c=parseInt(document.getElementById('vta-cant').value)||0,pr=parseFloat(document.getElementById('vta-precio').value)||0;
   const pid=document.getElementById('vta-prod').value,prod=db.productos.find(x=>x.id===pid),costo=prod?(prod.costo||0)*c:0;
-  document.getElementById('vta-total').value=bs(c*pr);document.getElementById('vta-gan').value=bs(c*pr-costo);
+  document.getElementById('vta-total').value=bs(c*pr);
+  document.getElementById('vta-gan').value=bs(c*pr-costo);
 }
-function guardarVta(){
-  const pid=document.getElementById('vta-prod').value;if(!pid)return toast('Selecciona un producto','error');
+window.calcVta = calcVta;
+
+window.guardarVta = function(){
+  const pid=document.getElementById('vta-prod').value; if(!pid) return toast('Selecciona un producto','error');
   const prod=db.productos.find(x=>x.id===pid),cant=parseInt(document.getElementById('vta-cant').value)||1;
   const precio=parseFloat(document.getElementById('vta-precio').value)||0;
-  if((parseInt(prod.stock)||0)<cant)return toast('⚠️ Stock insuficiente (quedan '+prod.stock+')','warn');
+  if((parseInt(prod.stock)||0)<cant) return toast('⚠️ Stock insuficiente (quedan '+prod.stock+')','warn');
   db.ventas.unshift({id:uid(),pid,pnom:prod.nombre,cant,precio,total:cant*precio,costo:(prod.costo||0)*cant,hermana:document.getElementById('vta-hermana').value,notas:document.getElementById('vta-notas').value,fecha:today()});
   prod.stock=Math.max(0,(parseInt(prod.stock)||0)-cant);
-  saveDB();closeM('m-venta');toast('Venta registrada ✓');render();
-}
-function delVta(id){if(!confirm('¿Eliminar venta?'))return;db.ventas=db.ventas.filter(v=>v.id!==id);saveDB();toast('Venta eliminada','warn');render();}
+  saveDB(); closeM('m-venta'); toast('Venta registrada ✓'); render();
+};
 
-// ── INVERSIÓN ──
+window.delVta = function(id){ if(!confirm('¿Eliminar venta?')) return; db.ventas=db.ventas.filter(v=>v.id!==id); saveDB(); toast('Venta eliminada','warn'); render(); };
+
+// ════════════════════════════════════════
+// INVERSIÓN
+// ════════════════════════════════════════
 function renderInversion(){
   const n=N(),lista=R()==='inversora'?db.inversiones.filter(x=>x.hermana===n):db.inversiones;
   const cards=document.getElementById('inv-cards');
@@ -1053,8 +1203,8 @@ function renderInversion(){
     const gan=db.ventas.filter(v=>v.hermana===h).reduce((s,v)=>s+(v.total-v.costo),0);
     const comp=db.compras.filter(c=>c.hermana===h).reduce((s,c)=>s+c.total,0);
     const neto=gan-inv;
-    if(R()==='inversora'&&h!==n)return '';
-    return `<div class="herm-card ${i===0?'hc-a':'hc-b'}" ${R()==='inversora'?'':''}>
+    if(R()==='inversora'&&h!==n) return '';
+    return `<div class="herm-card ${i===0?'hc-a':'hc-b'}">
       <div class="herm-name"><i class="ti ti-user-circle" style="font-size:18px"></i>${h}</div>
       <div class="herm-stats">
         <div class="hstat"><div class="hstat-val">${bs(inv)}</div><div class="hstat-lbl">Invertido</div></div>
@@ -1067,34 +1217,40 @@ function renderInversion(){
   if(!lista.length){tb.innerHTML=`<tr><td colspan="5"><div class="empty" style="padding:24px"><i class="ti ti-chart-bar"></i><p>Sin inversiones registradas</p></div></td></tr>`;return;}
   tb.innerHTML=lista.map(x=>`<tr><td style="font-weight:700">${x.desc}</td><td style="font-weight:900">${bs(x.monto)}</td><td><span class="badge bv">${x.hermana}</span></td><td>${fmtD(x.fecha)}</td><td><button class="btn btn-xs btn-danger" onclick="delInv('${x.id}')"><i class="ti ti-trash"></i></button></td></tr>`).join('');
 }
-function guardarInv(){
-  const desc=document.getElementById('inv-desc').value.trim();if(!desc)return toast('Ingresa descripción','error');
-  db.inversiones.unshift({id:uid(),hermana:document.getElementById('inv-quien').value,desc,monto:parseFloat(document.getElementById('inv-monto').value)||0,fecha:document.getElementById('inv-fecha').value||today()});
-  saveDB();closeM('m-inversion');toast('Inversión registrada ✓');render();
-}
-function delInv(id){if(!confirm('¿Eliminar?'))return;db.inversiones=db.inversiones.filter(x=>x.id!==id);saveDB();toast('Eliminado','warn');render();}
 
-// ── PRODUCTOS ──
-function previewImg(input){
-  const file=input.files[0];if(!file)return;
-  if(file.size>2*1024*1024){toast('Imagen muy grande, usa una menor a 2MB','warn');return;}
+window.guardarInv = function(){
+  const desc=document.getElementById('inv-desc').value.trim(); if(!desc) return toast('Ingresa descripción','error');
+  db.inversiones.unshift({id:uid(),hermana:document.getElementById('inv-quien').value,desc,monto:parseFloat(document.getElementById('inv-monto').value)||0,fecha:document.getElementById('inv-fecha').value||today()});
+  saveDB(); closeM('m-inversion'); toast('Inversión registrada ✓'); render();
+};
+
+window.delInv = function(id){ if(!confirm('¿Eliminar?')) return; db.inversiones=db.inversiones.filter(x=>x.id!==id); saveDB(); toast('Eliminado','warn'); render(); };
+
+// ════════════════════════════════════════
+// PRODUCTOS
+// ════════════════════════════════════════
+window.previewImg = function(input){
+  const file=input.files[0]; if(!file) return;
+  if(file.size>2*1024*1024){ toast('Imagen muy grande, usa una menor a 2MB','warn'); return; }
   const reader=new FileReader();
   reader.onload=e=>{
     const img=document.getElementById('prod-img-prev');
-    img.src=e.target.result;img.style.display='block';
+    img.src=e.target.result; img.style.display='block';
     document.getElementById('prod-img-data').value=e.target.result;
   };
   reader.readAsDataURL(file);
-}
-function autoPrecio(){
+};
+
+window.autoPrecio = function(){
   const c=parseFloat(document.getElementById('prod-costo').value)||0;
-  if(c>0)document.getElementById('prod-precio').value=(c+AUMENTO).toFixed(2);
-}
+  if(c>0) document.getElementById('prod-precio').value=(c+AUMENTO).toFixed(2);
+};
+
 function renderProductos(){
-  const bap=document.getElementById('btn-ap');if(bap)bap.style.display=R()==='admin'?'inline-flex':'none';
+  const bap=document.getElementById('btn-ap'); if(bap) bap.style.display=R()==='admin'?'inline-flex':'none';
   const q=(document.getElementById('prod-search')?.value||'').toLowerCase().trim();
   let lista=R()==='inversora'?db.productos.filter(p=>p.duena===N()||p.duena==='Ambas'):db.productos;
-  if(q)lista=lista.filter(p=>(p.nombre||'').toLowerCase().includes(q)||(p.codigo||'').toLowerCase().includes(q)||(p.cat||'').toLowerCase().includes(q));
+  if(q) lista=lista.filter(p=>(p.nombre||'').toLowerCase().includes(q)||(p.codigo||'').toLowerCase().includes(q)||(p.cat||'').toLowerCase().includes(q));
   const grid=document.getElementById('prod-grid');
   if(!lista.length){grid.innerHTML='<div class="empty" style="grid-column:1/-1"><i class="ti ti-package"></i><p>'+(q?'Sin resultados para "'+q+'"':'No hay productos registrados')+'</p></div>';return;}
   grid.innerHTML=lista.map(p=>{
@@ -1116,16 +1272,19 @@ function renderProductos(){
     </div>`;
   }).join('');
 }
-function guardarProd(){
-  const nom=document.getElementById('prod-nom').value.trim();if(!nom)return toast('Ingresa nombre del producto','error');
+window.renderProductos = renderProductos;
+
+window.guardarProd = function(){
+  const nom=document.getElementById('prod-nom').value.trim(); if(!nom) return toast('Ingresa nombre del producto','error');
   const eid=document.getElementById('prod-id').value;
   const p={id:eid||uid(),codigo:document.getElementById('prod-codigo').value.trim().toUpperCase(),nombre:nom,cat:document.getElementById('prod-cat').value,duena:document.getElementById('prod-duena').value,costo:parseFloat(document.getElementById('prod-costo').value)||0,precio:parseFloat(document.getElementById('prod-precio').value)||0,stock:parseInt(document.getElementById('prod-stock').value)||0,notas:document.getElementById('prod-notas').value,img:document.getElementById('prod-img-data').value||''};
   const idx=db.productos.findIndex(x=>x.id===p.id);
-  if(idx>=0)db.productos[idx]=p;else db.productos.unshift(p);
-  saveDB();closeM('m-producto');toast(eid?'Producto actualizado ✓':'Producto agregado ✓');render();
-}
-function editProd(id){
-  const p=db.productos.find(x=>x.id===id);if(!p)return;
+  if(idx>=0) db.productos[idx]=p; else db.productos.unshift(p);
+  saveDB(); closeM('m-producto'); toast(eid?'Producto actualizado ✓':'Producto agregado ✓'); render();
+};
+
+window.editProd = function(id){
+  const p=db.productos.find(x=>x.id===id); if(!p) return;
   openM('m-producto');
   setTimeout(()=>{
     document.getElementById('prod-m-title').textContent='Editar producto';
@@ -1142,29 +1301,37 @@ function editProd(id){
     const prev=document.getElementById('prod-img-prev');
     if(p.img){prev.src=p.img;prev.style.display='block';}else{prev.style.display='none';}
   },50);
-}
-function delProd(id){if(!confirm('¿Eliminar producto?'))return;db.productos=db.productos.filter(p=>p.id!==id);saveDB();toast('Producto eliminado','warn');render();}
+};
 
-// ── COMPRAS ──
+window.delProd = function(id){ if(!confirm('¿Eliminar producto?')) return; db.productos=db.productos.filter(p=>p.id!==id); saveDB(); toast('Producto eliminado','warn'); render(); };
+
+// ════════════════════════════════════════
+// COMPRAS
+// ════════════════════════════════════════
 function renderCompras(){
-  const bac=document.getElementById('btn-ac');if(bac)bac.style.display='inline-flex';
+  const bac=document.getElementById('btn-ac'); if(bac) bac.style.display='inline-flex';
   const tb=document.getElementById('tb-compras');
   if(!db.compras.length){tb.innerHTML=`<tr><td colspan="7"><div class="empty" style="padding:24px"><i class="ti ti-shopping-cart"></i><p>Sin compras registradas</p></div></td></tr>`;return;}
   tb.innerHTML=db.compras.map(c=>`<tr><td style="font-weight:800">${c.pnom}</td><td>${c.cant}</td><td>${bs(c.precio)}</td><td style="font-weight:900">${bs(c.total)}</td><td><span class="badge bv">${c.hermana}</span></td><td>${fmtD(c.fecha)}</td><td><button class="btn btn-xs btn-danger" onclick="delComp('${c.id}')"><i class="ti ti-trash"></i></button></td></tr>`).join('');
 }
-function guardarCompra(){
-  const pid=document.getElementById('comp-prod').value;if(!pid)return toast('Selecciona un producto','error');
+
+window.guardarCompra = function(){
+  const pid=document.getElementById('comp-prod').value; if(!pid) return toast('Selecciona un producto','error');
   const prod=db.productos.find(x=>x.id===pid),cant=parseInt(document.getElementById('comp-cant').value)||1,precio=parseFloat(document.getElementById('comp-precio').value)||0;
   db.compras.unshift({id:uid(),pid,pnom:prod.nombre,cant,precio,total:cant*precio,hermana:document.getElementById('comp-herm').value,fecha:today()});
-  prod.stock=(parseInt(prod.stock)||0)+cant;prod.costo=precio;
-  saveDB();closeM('m-compra');toast('Compra registrada ✓');render();
-}
-function delComp(id){if(!confirm('¿Eliminar?'))return;db.compras=db.compras.filter(c=>c.id!==id);saveDB();toast('Eliminado','warn');render();}
+  prod.stock=(parseInt(prod.stock)||0)+cant;
+  prod.costo=precio;
+  saveDB(); closeM('m-compra'); toast('Compra registrada ✓'); render();
+};
 
-// ── INIT ──
-loadDB();
-document.getElementById('screen-login').style.display='flex';
-document.getElementById('screen-app').style.display='none';
+window.delComp = function(id){ if(!confirm('¿Eliminar?')) return; db.compras=db.compras.filter(c=>c.id!==id); saveDB(); toast('Eliminado','warn'); render(); };
+
+// ════════════════════════════════════════
+// INIT — arranca el listener de Firebase
+// ════════════════════════════════════════
+setFbStatus('connecting');
+startFirebaseListener();
+
 </script>
 </body>
 </html>
