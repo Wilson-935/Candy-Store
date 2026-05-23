@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -312,6 +311,30 @@ tr:hover td{background:var(--pll)}
 .empty i{font-size:44px;display:block;margin-bottom:10px;color:var(--p);opacity:.25}
 .empty p{font-size:13px;font-weight:800}
 
+/* ═══════════════ AJUSTES (admin) ═══════════════ */
+.aj-section{background:#fff;border:1.5px solid var(--pl);border-radius:var(--radius);
+  overflow:hidden;margin-bottom:16px;box-shadow:var(--card-shadow)}
+.aj-hdr{padding:14px 18px;background:linear-gradient(135deg,var(--pll),#EFF6FF);
+  border-bottom:1.5px solid var(--pl);font-size:13px;font-weight:800;color:var(--pd);
+  display:flex;align-items:center;gap:8px}
+.aj-body{padding:18px;display:flex;flex-direction:column;gap:12px}
+.aj-desc{font-size:12px;color:var(--mu);font-weight:700;line-height:1.5;
+  background:var(--pll);border-radius:10px;padding:10px 14px;border-left:3px solid var(--p)}
+.aj-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.aj-info{flex:1;min-width:0}
+.aj-info strong{display:block;font-size:13px;color:var(--tx);font-weight:800;margin-bottom:2px}
+.aj-info span{font-size:11px;color:var(--mu);font-weight:700}
+.import-zone{border:2.5px dashed var(--p);border-radius:var(--radius-sm);padding:24px;
+  text-align:center;background:var(--pll);cursor:pointer;transition:all .2s}
+.import-zone:hover{background:var(--pl);border-color:var(--pd)}
+.import-zone i{font-size:32px;color:var(--p);display:block;margin-bottom:8px}
+.import-zone p{font-size:12px;color:var(--pd);font-weight:800}
+.import-zone small{font-size:10px;color:var(--mu);font-weight:700}
+.db-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.db-stat{background:var(--pll);border-radius:10px;padding:10px;text-align:center;border:1.5px solid var(--pl)}
+.db-stat-val{font-size:16px;font-weight:900;color:var(--pd)}
+.db-stat-lbl{font-size:9px;color:var(--mu);font-weight:800;margin-top:2px}
+
 /* ═══════════════ ANIMATIONS ═══════════════ */
 @keyframes slideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -476,6 +499,55 @@ tr:hover td{background:var(--pll)}
           <div class="pg-head"><div class="pg-title">Productos</div><button class="btn btn-primary" id="btn-ap" onclick="openM('m-producto')"><i class="ti ti-plus"></i> Agregar</button></div>
           <div class="search-bar"><i class="ti ti-search"></i><input type="text" id="prod-search" placeholder="Buscar por nombre o código..." oninput="renderProductos()"></div>
           <div id="prod-grid" class="prod-grid"></div>
+        </div>
+
+        <!-- AJUSTES (solo admin) -->
+        <div class="page" id="pg-ajustes">
+          <div class="pg-head"><div class="pg-title">⚙️ Ajustes</div></div>
+
+          <div class="aj-section">
+            <div class="aj-hdr"><i class="ti ti-database"></i> Estado de la base de datos</div>
+            <div class="aj-body">
+              <div class="db-stats">
+                <div class="db-stat"><div class="db-stat-val" id="aj-n-prod">—</div><div class="db-stat-lbl">Productos</div></div>
+                <div class="db-stat"><div class="db-stat-val" id="aj-n-ped">—</div><div class="db-stat-lbl">Pedidos</div></div>
+                <div class="db-stat"><div class="db-stat-val" id="aj-n-vta">—</div><div class="db-stat-lbl">Ventas</div></div>
+                <div class="db-stat"><div class="db-stat-val" id="aj-n-inv">—</div><div class="db-stat-lbl">Inversiones</div></div>
+                <div class="db-stat"><div class="db-stat-val" id="aj-n-comp">—</div><div class="db-stat-lbl">Compras</div></div>
+                <div class="db-stat"><div class="db-stat-val" id="aj-size">—</div><div class="db-stat-lbl">Tamaño KB</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="aj-section">
+            <div class="aj-hdr"><i class="ti ti-download"></i> Exportar base de datos</div>
+            <div class="aj-body">
+              <div class="aj-desc">Descarga una copia completa de todos los datos como archivo <strong>.json</strong>. Úsalo como respaldo antes de hacer cambios importantes.</div>
+              <div class="aj-row">
+                <div class="aj-info">
+                  <strong>Exportar todo a JSON</strong>
+                  <span>candy-store-backup-[fecha].json</span>
+                </div>
+                <button class="btn btn-green" onclick="exportarDB()"><i class="ti ti-download"></i> Descargar</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="aj-section">
+            <div class="aj-hdr"><i class="ti ti-upload"></i> Importar base de datos</div>
+            <div class="aj-body">
+              <div class="aj-desc" style="border-left-color:var(--r);background:#FEF2F2;color:#991B1B">
+                ⚠️ <strong>¡Cuidado!</strong> Importar un archivo <strong>reemplaza completamente</strong> todos los datos actuales en Firebase. Exporta primero como respaldo.
+              </div>
+              <div class="import-zone" onclick="document.getElementById('import-file').click()">
+                <i class="ti ti-file-import"></i>
+                <p>Toca para elegir archivo JSON</p>
+                <small>Solo archivos exportados desde esta app</small>
+                <input type="file" id="import-file" accept=".json" onchange="importarDB(this)" style="display:none">
+              </div>
+              <div id="import-preview" style="display:none;background:var(--gl);border-radius:10px;padding:12px;font-size:12px;color:var(--gd);font-weight:800;line-height:1.8"></div>
+            </div>
+          </div>
         </div>
 
         <!-- COMPRAS -->
@@ -813,6 +885,7 @@ const NAV_CFG = {
     {id:'inversion',icon:'ti-chart-bar',lbl:'Inversión'},
     {id:'productos',icon:'ti-package',lbl:'Productos'},
     {id:'compras',icon:'ti-shopping-cart',lbl:'Compras'},
+    {id:'ajustes',icon:'ti-settings',lbl:'Ajustes'},
   ],
   inversora:[
     {id:'inicio',icon:'ti-home',lbl:'Inicio'},
@@ -920,7 +993,8 @@ function render(){
   const pg=document.querySelector('.page.active'); if(!pg) return;
   const id=pg.id.replace('pg-','');
   ({inicio:renderInicio,pedidos:renderPedidos,ventas:renderVentas,
-    inversion:renderInversion,productos:renderProductos,compras:renderCompras
+    inversion:renderInversion,productos:renderProductos,compras:renderCompras,
+    ajustes:renderAjustes
   }[id]||(() => {}))();
 }
 window.render = render;
@@ -1326,6 +1400,110 @@ window.guardarCompra = function(){
 };
 
 window.delComp = function(id){ if(!confirm('¿Eliminar?')) return; db.compras=db.compras.filter(c=>c.id!==id); saveDB(); toast('Eliminado','warn'); render(); };
+
+// ════════════════════════════════════════
+// AJUSTES — EXPORTAR / IMPORTAR
+// ════════════════════════════════════════
+function renderAjustes(){
+  if(R()!=='admin') return;
+  // Estadísticas
+  document.getElementById('aj-n-prod').textContent = db.productos.length;
+  document.getElementById('aj-n-ped').textContent  = db.pedidos.length;
+  document.getElementById('aj-n-vta').textContent  = db.ventas.length;
+  document.getElementById('aj-n-inv').textContent  = db.inversiones.length;
+  document.getElementById('aj-n-comp').textContent = db.compras.length;
+  const kb = (JSON.stringify(db).length / 1024).toFixed(1);
+  document.getElementById('aj-size').textContent   = kb + ' KB';
+}
+
+window.exportarDB = function(){
+  if(R()!=='admin'){ toast('Sin permiso','error'); return; }
+  const payload = JSON.parse(JSON.stringify(db));
+  // Añade metadatos de exportación
+  const exportData = {
+    _exportado: new Date().toISOString(),
+    _version: 'candy-store-v1',
+    ...payload
+  };
+  const json = JSON.stringify(exportData, null, 2);
+  const blob = new Blob([json], {type:'application/json'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = `candy-store-backup-${today()}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('✓ Backup descargado correctamente');
+};
+
+window.importarDB = function(input){
+  if(R()!=='admin'){ toast('Sin permiso','error'); return; }
+  const file = input.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      // Validación básica
+      const tieneEstructura = 'productos' in data || 'ventas' in data || 'pedidos' in data;
+      if(!tieneEstructura) throw new Error('Archivo no válido');
+
+      const preview = document.getElementById('import-preview');
+      preview.style.display = 'block';
+      preview.innerHTML = `
+        📦 Productos: <strong>${(data.productos||[]).length}</strong> &nbsp;|&nbsp;
+        🛍️ Ventas: <strong>${(data.ventas||[]).length}</strong><br>
+        📋 Pedidos: <strong>${(data.pedidos||[]).length}</strong> &nbsp;|&nbsp;
+        💸 Inversiones: <strong>${(data.inversiones||[]).length}</strong> &nbsp;|&nbsp;
+        🛒 Compras: <strong>${(data.compras||[]).length}</strong><br><br>
+        <span style="color:#065F46">✓ Archivo válido. Confirma para importar.</span>
+      `;
+
+      // Guarda el dato parseado para confirmar luego
+      window._importPending = data;
+
+      // Muestra botón de confirmación
+      if(!document.getElementById('btn-confirmar-import')){
+        const btn = document.createElement('button');
+        btn.id        = 'btn-confirmar-import';
+        btn.className = 'btn btn-danger btn-full';
+        btn.style.marginTop = '10px';
+        btn.innerHTML = '<i class="ti ti-replace"></i> Confirmar importación (reemplaza todo)';
+        btn.onclick   = confirmarImport;
+        preview.after(btn);
+      }
+    } catch(err) {
+      toast('Archivo JSON inválido o corrupto', 'error');
+      input.value = '';
+    }
+  };
+  reader.readAsText(file);
+};
+
+function confirmarImport(){
+  if(!window._importPending){ toast('No hay archivo para importar','error'); return; }
+  if(!confirm('⚠️ ¿Seguro? Esto reemplazará TODOS los datos actuales en Firebase con los del archivo importado.')) return;
+
+  const data = window._importPending;
+  db.productos   = data.productos   || [];
+  db.ventas      = data.ventas      || [];
+  db.pedidos     = data.pedidos     || [];
+  db.inversiones = data.inversiones || [];
+  db.compras     = data.compras     || [];
+
+  saveDB();
+  window._importPending = null;
+
+  // Limpia UI de importación
+  document.getElementById('import-preview').style.display = 'none';
+  document.getElementById('import-preview').innerHTML = '';
+  const btnConf = document.getElementById('btn-confirmar-import');
+  if(btnConf) btnConf.remove();
+  document.getElementById('import-file').value = '';
+
+  toast('✓ Base de datos importada correctamente');
+  render();
+}
 
 // ════════════════════════════════════════
 // INIT — arranca el listener de Firebase
