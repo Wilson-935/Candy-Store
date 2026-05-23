@@ -30,7 +30,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);font-s
 ::-webkit-scrollbar{width:3px;height:3px}
 ::-webkit-scrollbar-thumb{background:var(--br);border-radius:4px}
 
-/* ═══════════════ LOADING SCREEN ═══════════════ */
+/* LOADING SCREEN */
 #screen-loading{
   position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
   background:linear-gradient(135deg,#2D1B69 0%,#4C1D95 40%,#1E40AF 100%);
@@ -41,7 +41,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);font-s
 .loading-txt{font-size:12px;color:rgba(255,255,255,.6);font-weight:800;letter-spacing:1px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ═══════════════ TOAST ═══════════════ */
+/* TOAST */
 #toast-wrap{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:9999;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
 .toast{background:#1E1B4B;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:700;
   box-shadow:0 4px 20px rgba(0,0,0,.25);opacity:0;transform:translateY(-10px);
@@ -51,7 +51,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);font-s
 .toast.error{background:linear-gradient(135deg,var(--r),#DC2626)}
 .toast.warn{background:linear-gradient(135deg,var(--a),#D97706)}
 
-/* ═══════════════ LOGIN ═══════════════ */
+/* LOGIN */
 #screen-login{
   position:fixed;inset:0;display:none;align-items:center;justify-content:center;
   background:linear-gradient(135deg,#2D1B69 0%,#4C1D95 40%,#1E40AF 100%);
@@ -78,7 +78,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);font-s
 .pin-row{display:flex;gap:10px;justify-content:center;margin-bottom:14px}
 .pin-row input{width:52px;height:56px;text-align:center;font-size:24px;font-weight:900;
   border:2.5px solid var(--br);border-radius:12px;font-family:'Nunito',sans-serif;
-  color:var(--pd);background:var(--pll);transition:all .15s;-webkit-text-security:disc}
+  color:var(--pd);background:var(--pll);transition:all .15s;-webkit-text-security:disc;appearance:textfield}
 .pin-row input:focus{outline:none;border-color:var(--p);background:var(--pl);box-shadow:0 0 0 3px rgba(139,92,246,.15)}
 .btn-back{width:100%;padding:11px;border:2px solid var(--br);border-radius:10px;
   background:var(--pll);color:var(--pd);font-size:13px;font-weight:800;cursor:pointer;
@@ -95,7 +95,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);font-s
 .fb-dot.offline{background:var(--r);animation:none}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-/* ═══════════════ APP SHELL ═══════════════ */
+/* APP SHELL */
 #screen-app{position:fixed;inset:0;display:none;flex-direction:column}
 
 .topbar{height:var(--topbar-h);background:linear-gradient(135deg,var(--pdd),var(--pd),var(--b));
@@ -138,7 +138,6 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);font-s
 .sni:hover{background:rgba(255,255,255,.1);color:#fff}
 .sni.active{background:rgba(255,255,255,.18);color:#fff;border-left-color:#A78BFA}
 .sni i{font-size:18px;flex-shrink:0}
-/* Indicador Firebase en sidebar */
 .sb-firebase{margin:8px 12px 0;padding:8px 12px;border-radius:10px;background:rgba(255,255,255,.08);
   border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;gap:8px;font-size:11px;
   color:rgba(255,255,255,.7);font-weight:700}
@@ -163,7 +162,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);font-s
 .bni i{font-size:22px;transition:transform .2s}
 .bni.active i{transform:scale(1.1)}
 
-/* ═══════════════ BUTTONS ═══════════════ */
+/* BUTTONS */
 .btn{padding:9px 16px;border:2px solid var(--p);border-radius:var(--radius-sm);
   background:var(--pl);color:var(--pd);font-size:13px;font-family:'Nunito',sans-serif;
   cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-weight:800;
@@ -191,7 +190,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);font-s
   background:var(--pl);color:var(--pd);font-weight:800;cursor:pointer}
 .cat-filt-btn.active{background:var(--p);color:#fff;border-color:var(--p)}
 
-/* ═══════════════ CARDS ═══════════════ */
+/* CARDS */
 .card{background:#fff;border:1.5px solid var(--pl);border-radius:var(--radius);
   overflow:hidden;margin-bottom:14px;box-shadow:var(--card-shadow)}
 .card-hdr{padding:12px 16px;border-bottom:1.5px solid var(--pl);font-size:13px;font-weight:800;
@@ -211,7 +210,7 @@ td{padding:9px 10px;border-bottom:1px solid #F0EDFF;vertical-align:middle}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:var(--pll)}
 
-/* ═══════════════ BADGES ═══════════════ */
+/* BADGES */
 .badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:800;white-space:nowrap}
 .bv{background:var(--pl);color:var(--pd)}
 .bb{background:var(--bl);color:var(--bd)}
@@ -220,7 +219,7 @@ tr:hover td{background:var(--pll)}
 .br2{background:var(--rl);color:var(--rd)}
 .bgr{background:#F1F5F9;color:#475569}
 
-/* ═══════════════ MODAL ═══════════════ */
+/* MODAL */
 .modal-ov{display:none;position:fixed;inset:0;background:rgba(59,7,100,.4);
   z-index:500;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
 .modal-ov.open{display:flex}
@@ -239,14 +238,14 @@ tr:hover td{background:var(--pll)}
 .field label{display:block;font-size:11px;color:var(--mu);margin-bottom:4px;font-weight:800;letter-spacing:.3px}
 .field input,.field select,.field textarea{width:100%;padding:10px 12px;border:2px solid var(--br);
   border-radius:var(--radius-sm);font-size:14px;font-family:'Nunito',sans-serif;
-  background:var(--pll);color:var(--tx);font-weight:700;transition:border .15s;-webkit-appearance:none}
+  background:var(--pll);color:var(--tx);font-weight:700;transition:border .15s;-webkit-appearance:none;appearance:none}
 .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--p);background:#fff;box-shadow:0 0 0 3px rgba(139,92,246,.12)}
 .field textarea{resize:vertical;min-height:60px}
 .field input[readonly]{background:#E8E0FF;color:var(--pd);font-weight:900;cursor:default}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 
-/* ═══════════════ SEARCH BAR ═══════════════ */
+/* SEARCH BAR */
 .search-bar{position:relative;margin-bottom:14px}
 .search-bar input{width:100%;padding:10px 14px 10px 40px;border:2px solid var(--br);
   border-radius:30px;font-size:13px;font-family:'Nunito',sans-serif;background:#fff;
@@ -254,7 +253,7 @@ tr:hover td{background:var(--pll)}
 .search-bar input:focus{outline:none;border-color:var(--p);box-shadow:0 0 0 3px rgba(139,92,246,.12)}
 .search-bar i{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:18px;color:var(--mu)}
 
-/* ═══════════════ PRODUCT GRID ═══════════════ */
+/* PRODUCT GRID */
 .prod-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
 .prod-card{background:#fff;border:2px solid var(--pl);border-radius:var(--radius);
   overflow:hidden;box-shadow:var(--card-shadow);transition:all .2s;display:flex;flex-direction:column}
@@ -274,7 +273,7 @@ tr:hover td{background:var(--pll)}
 .prod-duena{font-size:10px;color:var(--mu);font-weight:700}
 .prod-actions{display:flex;gap:6px;padding:8px 10px;border-top:1.5px solid var(--pl);background:var(--pll)}
 
-/* ═══════════════ PEDIDO CARD ═══════════════ */
+/* PEDIDO CARD */
 .ped-card{background:#fff;border:2px solid var(--pl);border-radius:var(--radius);
   padding:14px;margin-bottom:12px;box-shadow:var(--card-shadow)}
 .ped-card.estado-entregado{border-color:#A7F3D0;background:#F0FDF4}
@@ -290,18 +289,19 @@ tr:hover td{background:var(--pll)}
 .pago-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,var(--p),var(--b));transition:width .6s}
 .ped-btns{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
 
-/* ═══════════════ HERMANA CARDS ═══════════════ */
+/* HERMANA CARDS */
 .herm-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:14px}
 .herm-card{border-radius:var(--radius);padding:14px;border:2.5px solid transparent}
 .hc-a{background:linear-gradient(135deg,#EDE9FE,#E0E7FF);border-color:#A78BFA}
 .hc-b{background:linear-gradient(135deg,#EFF6FF,#E0F2FE);border-color:#93C5FD}
+.hc-c{background:linear-gradient(135deg,#FEF3C7,#FDE68A);border-color:#F59E0B}
 .herm-name{font-size:13px;font-weight:900;color:var(--pd);margin-bottom:10px;display:flex;align-items:center;gap:7px}
 .herm-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
 .hstat{background:rgba(255,255,255,.8);border-radius:10px;padding:8px 6px;text-align:center}
 .hstat-val{font-size:13px;font-weight:900;color:var(--pd);line-height:1.2}
 .hstat-lbl{font-size:9px;color:var(--mu);font-weight:800;margin-top:2px}
 
-/* ═══════════════ IMG UPLOAD ═══════════════ */
+/* IMG UPLOAD */
 .img-upload{width:100%;height:130px;border:2.5px dashed var(--p);border-radius:var(--radius-sm);
   background:var(--pll);display:flex;flex-direction:column;align-items:center;justify-content:center;
   cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
@@ -310,16 +310,16 @@ tr:hover td{background:var(--pll)}
 .img-upload i{font-size:30px;color:var(--p);z-index:1}
 .img-upload img.preview{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:8px}
 
-/* ═══════════════ EMPTY ═══════════════ */
+/* EMPTY */
 .empty{text-align:center;padding:40px 16px;color:var(--mu)}
 .empty i{font-size:44px;display:block;margin-bottom:10px;color:var(--p);opacity:.25}
 .empty p{font-size:13px;font-weight:800}
 
-/* ═══════════════ ANIMATIONS ═══════════════ */
+/* ANIMATIONS */
 @keyframes slideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
-/* ═══════════════ RESPONSIVE ═══════════════ */
+/* RESPONSIVE */
 .sidebar{display:none}
 .topbar{display:flex}
 .bnav{display:flex}
@@ -337,7 +337,6 @@ tr:hover td{background:var(--pll)}
   .modal{border-radius:20px;max-height:85vh}
   .modal-hdr{border-radius:20px 20px 0 0}
 }
-
 @media(min-width:900px){
   #screen-app{flex-direction:row}
   .topbar{display:none}
@@ -346,7 +345,7 @@ tr:hover td{background:var(--pll)}
   .bnav{display:none}
   .content{padding:28px;padding-bottom:28px;max-width:1200px}
   .prod-grid{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))}
-  .herm-grid{grid-template-columns:1fr 1fr}
+  .herm-grid{grid-template-columns:1fr 1fr 1fr}
   .metrics{grid-template-columns:repeat(4,1fr)}
   .modal-ov{align-items:center}
   .modal{border-radius:20px;max-height:80vh}
@@ -363,14 +362,14 @@ tr:hover td{background:var(--pll)}
 
 <div id="toast-wrap"></div>
 
-<!-- ═══════════════ LOADING ═══════════════ -->
+<!-- LOADING -->
 <div id="screen-loading">
   <div class="loading-logo">Candy Store</div>
   <div class="loading-spinner"></div>
   <div class="loading-txt">Conectando con Firebase...</div>
 </div>
 
-<!-- ═══════════════ LOGIN ═══════════════ -->
+<!-- LOGIN -->
 <div id="screen-login">
   <div class="login-box">
     <div class="login-logo">Candy Store</div>
@@ -403,7 +402,7 @@ tr:hover td{background:var(--pll)}
   </div>
 </div>
 
-<!-- ═══════════════ APP ═══════════════ -->
+<!-- APP -->
 <div id="screen-app">
   <div class="sidebar" id="sidebar">
     <div class="sb-logo-wrap"><div class="sb-logo">Candy Store</div><div class="sb-sub">GESTIÓN INTERNA</div></div>
@@ -469,12 +468,12 @@ tr:hover td{background:var(--pll)}
           <div class="pg-head"><div class="pg-title">Inversión</div><button class="btn btn-primary" onclick="openM('m-inversion')"><i class="ti ti-plus"></i> Registrar</button></div>
           <div class="herm-grid" id="inv-cards"></div>
           <div class="card"><div class="card-hdr">Historial</div>
-            <table><thead><tr><th>Descripción</th><th>Monto</th><th>Hermana</th><th>Fecha</th><th></th></tr></thead>
+            </table><thead><tr><th>Descripción</th><th>Monto</th><th>Hermana</th><th>Fecha</th><th></th></tr></thead>
             <tbody id="tb-inv"></tbody></table>
           </div>
         </div>
 
-        <!-- PRODUCTOS con filtros por categoría -->
+        <!-- PRODUCTOS -->
         <div class="page" id="pg-productos">
           <div class="pg-head"><div class="pg-title">Productos</div><button class="btn btn-primary" id="btn-ap" onclick="openM('m-producto')"><i class="ti ti-plus"></i> Agregar</button></div>
           <div style="display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap">
@@ -503,9 +502,9 @@ tr:hover td{background:var(--pll)}
   </div>
 </div>
 
-<!-- ═══════════════ MODALES ═══════════════ -->
+<!-- MODALES -->
 
-<!-- PEDIDO (sin cambios relevantes) -->
+<!-- PEDIDO -->
 <div class="modal-ov" id="m-pedido">
   <div class="modal">
     <div class="modal-hdr"><span id="ped-m-title">Nuevo pedido</span><button class="btn btn-sm" onclick="closeM('m-pedido')"><i class="ti ti-x"></i></button></div>
@@ -521,7 +520,7 @@ tr:hover td{background:var(--pll)}
         <input id="ped-prod" placeholder="O escribe manualmente...">
       </div>
       <div class="field"><label>🏷️ ¿De quién es el producto?</label>
-        <select id="ped-duena"><option value="Karen">Karen</option><option value="Samantha">Samantha</option><option value="Ambas">Ambas</option></select>
+        <select id="ped-duena"><option value="Wilson">Wilson</option><option value="Karen">Karen</option><option value="Samantha">Samantha</option><option value="Ambas">Ambas</option></select>
       </div>
       <div class="grid3">
         <div class="field"><label>💸 Costo (Bs.)</label><input id="ped-costo" type="number" min="0" step="0.01" oninput="calcPedPrecio()" placeholder="0.00"></div>
@@ -562,14 +561,14 @@ tr:hover td{background:var(--pll)}
         <div class="field"><label>💵 Total</label><input id="vta-total" readonly></div>
         <div class="field"><label>📈 Ganancia</label><input id="vta-gan" readonly style="color:#059669;font-weight:900"></div>
       </div>
-      <div class="field"><label>👩 ¿De quién es el producto?</label><select id="vta-hermana"><option value="Karen">Karen</option><option value="Samantha">Samantha</option></select></div>
+      <div class="field"><label>👩 ¿De quién es el producto?</label><select id="vta-hermana"><option value="Wilson">Wilson</option><option value="Karen">Karen</option><option value="Samantha">Samantha</option></select></div>
       <div class="field"><label>📝 Notas</label><input id="vta-notas" placeholder="Opcional"></div>
     </div>
     <div class="modal-ft"><button class="btn" onclick="closeM('m-venta')">Cancelar</button><button class="btn btn-primary" onclick="guardarVta()"><i class="ti ti-device-floppy"></i> Registrar</button></div>
   </div>
 </div>
 
-<!-- PRODUCTO - con categorías fijas -->
+<!-- PRODUCTO -->
 <div class="modal-ov" id="m-producto">
   <div class="modal">
     <div class="modal-hdr"><span id="prod-m-title">Agregar producto</span><button class="btn btn-sm" onclick="closeM('m-producto')"><i class="ti ti-x"></i></button></div>
@@ -585,7 +584,7 @@ tr:hover td{background:var(--pll)}
       </div>
       <div class="grid2">
         <div class="field"><label>🏷️ Código</label><input id="prod-codigo" placeholder="Ej: SEC-001" style="text-transform:uppercase"></div>
-        <div class="field"><label>👩 ¿De quién?</label><select id="prod-duena"><option value="Karen">Karen</option><option value="Samantha">Samantha</option><option value="Ambas">Ambas</option></select></div>
+        <div class="field"><label>👩 ¿De quién?</label><select id="prod-duena"><option value="Wilson">Wilson</option><option value="Karen">Karen</option><option value="Samantha">Samantha</option><option value="Ambas">Ambas</option></select></div>
       </div>
       <div class="field"><label>📦 Nombre del producto</label><input id="prod-nom" placeholder="Ej: Secadora Remington azul"></div>
       <div class="field"><label>🗂️ Categoría</label>
@@ -616,7 +615,7 @@ tr:hover td{background:var(--pll)}
         <div class="field"><label>🔢 Cantidad</label><input id="comp-cant" type="number" min="1" value="1"></div>
         <div class="field"><label>💰 Precio unitario (Bs.)</label><input id="comp-precio" type="number" min="0" step="0.01"></div>
       </div>
-      <div class="field"><label>👩 ¿Quién invirtió?</label><select id="comp-herm"><option value="Karen">Karen</option><option value="Samantha">Samantha</option></select></div>
+      <div class="field"><label>👩 ¿Quién invirtió?</label><select id="comp-herm"><option value="Wilson">Wilson</option><option value="Karen">Karen</option><option value="Samantha">Samantha</option></select></div>
     </div>
     <div class="modal-ft"><button class="btn" onclick="closeM('m-compra')">Cancelar</button><button class="btn btn-primary" onclick="guardarCompra()"><i class="ti ti-device-floppy"></i> Guardar</button></div>
   </div>
@@ -627,7 +626,7 @@ tr:hover td{background:var(--pll)}
   <div class="modal">
     <div class="modal-hdr">Registrar inversión <button class="btn btn-sm" onclick="closeM('m-inversion')"><i class="ti ti-x"></i></button></div>
     <div class="modal-body">
-      <div class="field"><label>👩 ¿Quién invierte?</label><select id="inv-quien"><option value="Karen">Karen</option><option value="Samantha">Samantha</option></select></div>
+      <div class="field"><label>👩 ¿Quién invierte?</label><select id="inv-quien"><option value="Wilson">Wilson</option><option value="Karen">Karen</option><option value="Samantha">Samantha</option></select></div>
       <div class="field"><label>📝 Descripción</label><input id="inv-desc" placeholder="Ej: Compra stock, envío, etc."></div>
       <div class="field"><label>💰 Monto (Bs.)</label><input id="inv-monto" type="number" min="0" step="0.01"></div>
       <div class="field"><label>📅 Fecha</label><input id="inv-fecha" type="date"></div>
@@ -636,17 +635,11 @@ tr:hover td{background:var(--pll)}
   </div>
 </div>
 
-<!-- ════════════════════════════════════════════
-     FIREBASE SDK (módulos ESM via CDN)
-════════════════════════════════════════════ -->
+<!-- FIREBASE SDK -->
 <script type="module">
-// ── Firebase imports ──
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {
-  getDatabase, ref, onValue, set, get
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// ── Config ──
 const firebaseConfig = {
   apiKey: "AIzaSyA-2D8gZKUsaoniqnGmnowqU3GaWUMi5Ek",
   authDomain: "candy-store-247.firebaseapp.com",
@@ -661,22 +654,18 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const DB_REF = ref(database, 'candy-store/data');
 
-// ════════════════════════════════════════
 // ESTADO GLOBAL
-// ════════════════════════════════════════
 const PINS   = {wilson:'1234', karen:'1111', samantha:'2222', mama:'3333'};
 const NAMES  = {wilson:'Wilson', karen:'Karen', samantha:'Samantha', mama:'Mamá'};
 const ROLES  = {wilson:'admin', karen:'inversora', samantha:'inversora', mama:'operadora'};
 const AUMENTO = 80;
 
 let cu = null, selU = null, pfiltro = 'todos', vtafiltro = 'todas';
-let categoriaFiltro = 'todas';   // para productos
+let categoriaFiltro = 'todas';
 let db = {productos:[], ventas:[], pedidos:[], inversiones:[], compras:[]};
 let fbConnected = false;
 
-// ════════════════════════════════════════
 // UTILS
-// ════════════════════════════════════════
 const uid   = () => Date.now().toString(36) + Math.random().toString(36).slice(2,6);
 const bs    = n  => 'Bs. ' + parseFloat(n||0).toFixed(2);
 const today = () => new Date().toISOString().slice(0,10);
@@ -684,9 +673,7 @@ const fmtD  = d  => { try{ return new Date(d+'T12:00:00').toLocaleDateString('es
 const R     = () => ROLES[cu]  || '';
 const N     = () => NAMES[cu]  || '';
 
-// ════════════════════════════════════════
 // TOAST
-// ════════════════════════════════════════
 function toast(msg, type='success'){
   const el = document.createElement('div');
   el.className = `toast ${type}`;
@@ -697,9 +684,7 @@ function toast(msg, type='success'){
 }
 window.toast = toast;
 
-// ════════════════════════════════════════
 // INDICADOR CONEXIÓN
-// ════════════════════════════════════════
 function setFbStatus(state){
   const dots = document.querySelectorAll('.fb-dot');
   const txts = [document.getElementById('fb-status-txt'), document.getElementById('sb-fb-txt')];
@@ -709,14 +694,11 @@ function setFbStatus(state){
   fbConnected = (state==='online');
 }
 
-// ════════════════════════════════════════
-// FIREBASE — LISTENER EN TIEMPO REAL
-// ════════════════════════════════════════
+// FIREBASE LISTENER
 function startFirebaseListener(){
   onValue(DB_REF, (snapshot) => {
     const data = snapshot.val();
     setFbStatus('online');
-
     if(data){
       db.productos   = data.productos   || [];
       db.ventas      = data.ventas      || [];
@@ -729,7 +711,6 @@ function startFirebaseListener(){
       db.compras     = data.compras     || [];
     }
     if(cu) render();
-
     if(document.getElementById('screen-loading').style.display !== 'none'){
       document.getElementById('screen-loading').style.display = 'none';
       document.getElementById('screen-login').style.display   = 'flex';
@@ -743,9 +724,7 @@ function startFirebaseListener(){
   });
 }
 
-// ════════════════════════════════════════
-// FIREBASE — GUARDAR
-// ════════════════════════════════════════
+// GUARDAR
 function saveDB(){
   const bar = document.getElementById('sync-bar');
   bar.className = 'sync-bar show syncing';
@@ -767,9 +746,7 @@ function saveDB(){
 }
 window.saveDB = saveDB;
 
-// ════════════════════════════════════════
-// LOGIN (sin cambios)
-// ════════════════════════════════════════
+// LOGIN
 window.selPerfil = function(u){
   selU = u;
   document.querySelectorAll('.pfbtn').forEach(b=>b.classList.remove('sel'));
@@ -780,20 +757,17 @@ window.selPerfil = function(u){
   document.getElementById('step-pin').style.display='block';
   setTimeout(()=>document.getElementById('p0').focus(),80);
 };
-
 window.goBack = function(){
   document.getElementById('step-pin').style.display='none';
   document.getElementById('step-perfil').style.display='block';
   document.getElementById('lerr').textContent='';
   selU=null;
 };
-
 window.pnext = function(i){
   const v=document.getElementById('p'+i).value;
   if(/^\d$/.test(v)&&i<3) document.getElementById('p'+(i+1)).focus();
   else if(v&&!/^\d$/.test(v)) document.getElementById('p'+i).value='';
 };
-
 window.doLogin = function(){
   if(!selU){ document.getElementById('lerr').textContent='Elige un perfil primero'; return; }
   const pin=['p0','p1','p2','p3'].map(id=>document.getElementById(id).value).join('');
@@ -805,7 +779,6 @@ window.doLogin = function(){
     document.getElementById('p0').focus();
   }
 };
-
 window.logout = function(){
   cu=null; selU=null;
   document.getElementById('screen-app').style.display='none';
@@ -816,9 +789,7 @@ window.logout = function(){
   document.getElementById('lerr').textContent='';
 };
 
-// ════════════════════════════════════════
-// NAV CONFIG
-// ════════════════════════════════════════
+// NAV
 const NAV_CFG = {
   admin:[
     {id:'inicio',icon:'ti-home',lbl:'Inicio'},
@@ -845,9 +816,6 @@ const NAV_CFG = {
   ]
 };
 
-// ════════════════════════════════════════
-// START APP
-// ════════════════════════════════════════
 function startApp(){
   document.getElementById('screen-login').style.display='none';
   document.getElementById('screen-app').style.display='flex';
@@ -858,7 +826,6 @@ function startApp(){
   buildNav();
   nav('inicio');
 }
-
 function buildNav(){
   const items=NAV_CFG[R()]||NAV_CFG.operadora;
   document.getElementById('bnav').innerHTML=items.slice(0,5).map(it=>
@@ -868,7 +835,6 @@ function buildNav(){
     `<div class="sni" onclick="nav('${it.id}')" id="sn-${it.id}"><i class="ti ${it.icon}"></i>${it.lbl}</div>`
   ).join('');
 }
-
 window.nav = function(pg){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.bni,.sni').forEach(b=>b.classList.remove('active'));
@@ -878,25 +844,27 @@ window.nav = function(pg){
   render();
 };
 
-// ════════════════════════════════════════
 // MODALS
-// ════════════════════════════════════════
 window.openM = function(id){
   if(id==='m-venta'){
     document.getElementById('vta-prod').innerHTML='<option value="">— seleccionar —</option>'+
       db.productos.map(p=>`<option value="${p.id}">${p.codigo?'['+p.codigo+'] ':''} ${p.nombre} · Stock:${p.stock}</option>`).join('');
     if(R()==='inversora') document.getElementById('vta-hermana').value=N();
+    else if(R()==='admin') document.getElementById('vta-hermana').value='Wilson';
     document.getElementById('vta-stock-warn').style.display='none';
   }
   if(id==='m-compra'){
     document.getElementById('comp-prod').innerHTML='<option value="">— seleccionar —</option>'+
       db.productos.map(p=>`<option value="${p.id}">${p.nombre}</option>`).join('');
     if(R()==='inversora') document.getElementById('comp-herm').value=N();
+    else if(R()==='admin') document.getElementById('comp-herm').value='Wilson';
   }
   if(id==='m-inversion'){
     document.getElementById('inv-fecha').value=today();
     const iq=document.getElementById('inv-quien');
-    if(R()==='inversora'){iq.value=N();iq.disabled=true;}else iq.disabled=false;
+    if(R()==='inversora'){iq.value=N();iq.disabled=true;}
+    else if(R()==='admin'){iq.value='Wilson';iq.disabled=false;}
+    else iq.disabled=false;
   }
   if(id==='m-pedido'){
     document.getElementById('ped-m-title').textContent='Nuevo pedido';
@@ -920,19 +888,18 @@ window.openM = function(id){
     ['prod-codigo','prod-nom','prod-notas'].forEach(i=>document.getElementById(i).value='');
     ['prod-costo','prod-precio'].forEach(i=>document.getElementById(i).value='');
     document.getElementById('prod-stock').value='0';
-    document.getElementById('prod-duena').value='Karen';
+    if(R()==='admin') document.getElementById('prod-duena').value='Wilson';
+    else if(R()==='inversora') document.getElementById('prod-duena').value=N();
+    else document.getElementById('prod-duena').value='Karen';
     document.getElementById('prod-img-data').value='';
     document.getElementById('prod-cat').value='CEPILLOS & DEPILADORES';
     const prev=document.getElementById('prod-img-prev');prev.src='';prev.style.display='none';
   }
   document.getElementById(id).classList.add('open');
 };
-
 window.closeM = function(id){ document.getElementById(id).classList.remove('open'); };
 
-// ════════════════════════════════════════
-// RENDER ROUTER
-// ════════════════════════════════════════
+// RENDER
 function render(){
   const pg=document.querySelector('.page.active'); if(!pg) return;
   const id=pg.id.replace('pg-','');
@@ -942,9 +909,7 @@ function render(){
 }
 window.render = render;
 
-// ════════════════════════════════════════
-// INICIO (sin cambios)
-// ════════════════════════════════════════
+// INICIO
 function renderInicio(){
   const t=today();
   document.getElementById('ini-title').textContent='Hola, '+N()+' ✨';
@@ -959,14 +924,28 @@ function renderInicio(){
       <div class="metric"><div class="metric-lbl">📈 Ganancia hoy</div><div class="metric-val" style="color:${gh>=0?'var(--g)':'var(--r)'}">${bs(gh)}</div><div class="metric-sub">estimada</div></div>
       <div class="metric"><div class="metric-lbl">📋 Pedidos pendientes</div><div class="metric-val">${pp}</div><div class="metric-sub">por entregar</div></div>
       <div class="metric"><div class="metric-lbl">📦 Stock total</div><div class="metric-val">${stk}</div><div class="metric-sub">unidades</div></div>`;
-    const p5=db.pedidos.filter(p=>p.estado==='pendiente').slice(0,5),low=db.productos.filter(p=>(parseInt(p.stock)||0)<=3);
-    ex.innerHTML=`<div class="card"><div class="card-hdr">⏳ Pedidos pendientes</div>
-      <table><thead><tr><th>Cliente</th><th>Producto</th><th>Dueña</th><th>Saldo</th></tr></thead><tbody>
-      ${p5.length?p5.map(p=>{const s=(p.total||0)-(p.pagado||0);return`<tr><td style="font-weight:800">${p.cli}</td><td style="font-size:11px">${(p.productoTexto||p.prod||'').slice(0,22)}</td><td><span class="badge bv">${p.duena||'?'}</span></td><td>${s>0?`<span class="badge ba">${bs(s)}</span>`:'<span class="badge bg">✅</span>'}</td></tr>`;}).join(''):`<tr><td colspan="4"><div class="empty" style="padding:20px"><i class="ti ti-check" style="font-size:24px"></i><p>Sin pendientes</p></div></td></tr>`}
-      </tbody></table></div>
-      ${low.length?`<div class="card"><div class="card-hdr">⚠️ Stock bajo (≤3)</div><table><thead><tr><th>Producto</th><th>Stock</th><th>Dueña</th></tr></thead><tbody>${low.map(p=>`<tr><td style="font-weight:800">${p.nombre}</td><td><span class="badge br2">${p.stock}</span></td><td><span class="badge bv">${p.duena}</span></td></tr>`).join('')}</tbody></table></div>`:''}`;
+    const misVentas=db.ventas.filter(v=>v.hermana==='Wilson'), misIngresos=misVentas.reduce((s,v)=>s+v.total,0);
+    const misGanancias=misVentas.reduce((s,v)=>s+(v.total-v.costo),0);
+    const misProd=db.productos.filter(p=>p.duena==='Wilson'||p.duena==='Ambas'), misStock=misProd.reduce((s,p)=>s+(parseInt(p.stock)||0),0);
+    const misInv=db.inversiones.filter(x=>x.hermana==='Wilson').reduce((s,x)=>s+x.monto,0);
+    const pendientesHtml = (db.pedidos.filter(p=>p.estado==='pendiente').slice(0,5).map(p=>{
+        const saldo = (p.total||0)-(p.pagado||0);
+        return `<tr><td style="font-weight:800">${p.cli}</td><td style="font-size:11px">${(p.productoTexto||p.prod||'').slice(0,22)}</td><td><span class="badge bv">${p.duena||'?'}</span></td><td>${saldo>0?`<span class="badge ba">${bs(saldo)}</span>`:'<span class="badge bg">✅</span>'}</td></tr>`;
+      }).join('') || '<tr><td colspan="4"><div class="empty" style="padding:20px"><i class="ti ti-check"></i><p>Sin pendientes</p></div></td></tr>');
+    const stockBajo = db.productos.filter(p=>(parseInt(p.stock)||0)<=3);
+    const stockBajoHtml = stockBajo.length ? `<div class="card"><div class="card-hdr">⚠️ Stock bajo (≤3)</div><table><thead><tr><th>Producto</th><th>Stock</th><th>Dueña</th></tr></thead><tbody>${stockBajo.map(p=>`<tr><td style="font-weight:800">${p.nombre}</td><td><span class="badge br2">${p.stock}</span></td><td><span class="badge bv">${p.duena}</span></td></tr>`).join('')}</tbody></table></div>` : '';
+    ex.innerHTML=`
+      <div class="card"><div class="card-hdr">📊 Mi rendimiento (Wilson)</div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:16px">
+        <div class="metric" style="margin:0"><div class="metric-lbl">💰 Mis ventas</div><div class="metric-val">${bs(misIngresos)}</div></div>
+        <div class="metric" style="margin:0"><div class="metric-lbl">📈 Mi ganancia</div><div class="metric-val" style="color:${misGanancias>=0?'var(--g)':'var(--r)'}">${bs(misGanancias)}</div></div>
+        <div class="metric" style="margin:0"><div class="metric-lbl">💸 Mi inversión</div><div class="metric-val">${bs(misInv)}</div></div>
+        <div class="metric" style="margin:0"><div class="metric-lbl">📦 Mis productos</div><div class="metric-val">${misStock}</div></div>
+      </div></div>
+      <div class="card"><div class="card-hdr">⏳ Pedidos pendientes</div><table><thead><tr><th>Cliente</th><th>Producto</th><th>Dueña</th><th>Saldo</th></tr></thead><tbody>${pendientesHtml}</tbody></table></div>
+      ${stockBajoHtml}`;
   }
-  if(R()==='inversora'){
+  else if(R()==='inversora'){
     const vs=db.ventas.filter(v=>v.hermana===N()),ing=vs.reduce((s,v)=>s+v.total,0),gan=vs.reduce((s,v)=>s+(v.total-v.costo),0);
     const inv=db.inversiones.filter(x=>x.hermana===N()).reduce((s,x)=>s+x.monto,0);
     const mis=db.productos.filter(p=>p.duena===N()||p.duena==='Ambas'),stk=mis.reduce((s,p)=>s+(parseInt(p.stock)||0),0);
@@ -979,7 +958,7 @@ function renderInicio(){
       ${mis.length?mis.map(p=>`<tr><td style="font-weight:800">${p.nombre}</td><td><span class="badge ${(parseInt(p.stock)||0)<=3?'br2':(parseInt(p.stock)||0)<=10?'ba':'bg'}">${p.stock}</span></td><td style="font-weight:900;color:var(--p)">${bs(p.precio)}</td></tr>`).join(''):`<tr><td colspan="3"><div class="empty" style="padding:20px"><i class="ti ti-package"></i><p>Sin productos</p></div></td></tr>`}
       </tbody></table></div>`;
   }
-  if(R()==='operadora'){
+  else { // operadora
     const pds=db.pedidos.filter(p=>p.estado==='pendiente'),st=pds.reduce((s,p)=>s+(p.total||0)-(p.pagado||0),0);
     const vtasH=db.ventas.filter(v=>v.fecha===t),ihO=vtasH.reduce((s,v)=>s+v.total,0);
     m.innerHTML=`
@@ -991,9 +970,7 @@ function renderInicio(){
   }
 }
 
-// ════════════════════════════════════════
-// PEDIDOS (sin cambios lógicos, solo el render ya estaba actualizado)
-// ════════════════════════════════════════
+// PEDIDOS
 function renderPedidos(){
   const isAdmin=R()==='admin';
   const bnp=document.getElementById('btn-np'); if(bnp) bnp.style.display='inline-flex';
@@ -1043,7 +1020,6 @@ function renderPedidos(){
     </div>`;
   }).join('');
 }
-
 window.filtP = function(f,el){ pfiltro=f; document.querySelectorAll('.filt-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); renderPedidos(); };
 window.pedDesdeStock = function(){
   const pid=document.getElementById('ped-prod-sel').value; if(!pid) return;
@@ -1088,14 +1064,12 @@ window.guardarPed = function(){
   const costoUnit = parseFloat(document.getElementById('ped-costo').value) || 0;
   const total = cant * pv;
   const pagado = parseFloat(document.getElementById('ped-pagado').value) || 0;
-  
   if(prodId) {
     const prod = db.productos.find(p => p.id === prodId);
     if(prod && (parseInt(prod.stock)||0) < 1) {
       if(!confirm('⚠️ El producto no tiene stock disponible. ¿Deseas guardar el pedido de todas formas? No se podrá entregar hasta reponer stock.')) return;
     }
   }
-  
   const eid = document.getElementById('ped-id').value;
   const pedido = {
     id: eid || uid(),
@@ -1154,7 +1128,6 @@ window.entregarPedido = function(id){
   if(!ped) return;
   if(ped.estado === 'entregado') return toast('Este pedido ya fue entregado', 'warn');
   if(ped.estado === 'cancelado') return toast('No se puede entregar un pedido cancelado', 'error');
-  
   if(ped.productoId && ped.cantidad && ped.cantidad > 0) {
     const prod = db.productos.find(p => p.id === ped.productoId);
     if(!prod) {
@@ -1205,9 +1178,7 @@ window.delPed = function(id){
   render();
 };
 
-// ════════════════════════════════════════
-// VENTAS (sin cambios)
-// ════════════════════════════════════════
+// VENTAS
 function getVtaFiltro(){
   const t=today(),d=new Date();
   if(vtafiltro==='hoy') return v=>v.fecha===t;
@@ -1228,14 +1199,18 @@ function renderVentas(){
   const filt=getVtaFiltro();
   const lista=(R()==='inversora'?db.ventas.filter(v=>v.hermana===N()):db.ventas).filter(filt);
   const rc=document.getElementById('res-herm');
-  const hermanas=['Karen','Samantha'];
+  const socios = ['Wilson', 'Karen', 'Samantha'];
   if(R()==='admin'||R()==='operadora'){
-    rc.innerHTML=hermanas.map((h,i)=>{
+    rc.innerHTML=socios.map((h,i)=>{
       const vs=db.ventas.filter(v=>v.hermana===h&&filt(v));
       const ing=vs.reduce((s,v)=>s+v.total,0),gan=vs.reduce((s,v)=>s+(v.total-v.costo),0);
       const inv=db.inversiones.filter(x=>x.hermana===h).reduce((s,x)=>s+x.monto,0);
       const neto=gan-inv;
-      return `<div class="herm-card ${i===0?'hc-a':'hc-b'}">
+      let clase='hc-a';
+      if(h==='Karen') clase='hc-a';
+      else if(h==='Samantha') clase='hc-b';
+      else clase='hc-c';
+      return `<div class="herm-card ${clase}">
         <div class="herm-name"><i class="ti ti-user-circle" style="font-size:18px"></i>${h}</div>
         <div class="herm-stats">
           <div class="hstat"><div class="hstat-val">${bs(ing)}</div><div class="hstat-lbl">Ventas</div></div>
@@ -1264,7 +1239,7 @@ function renderVentas(){
     <td>${v.cant}</td>
     <td style="font-weight:900">${bs(v.total)}</td>
     <td style="color:${(v.total-v.costo)>=0?'var(--g)':'var(--r)'};font-weight:800">${bs(v.total-v.costo)}</td>
-    <td><span class="badge ${v.hermana==='Karen'?'bv':'bb'}">${v.hermana}</span></td>
+    <td><span class="badge ${v.hermana==='Wilson'?'bgr':(v.hermana==='Karen'?'bv':'bb')}">${v.hermana}</span></td>
     <td>${fmtD(v.fecha)}</td>
     <td>${R()==='admin'?`<button class="btn btn-xs btn-danger" onclick="delVta('${v.id}')"><i class="ti ti-trash"></i></button>`:''}</td>
   </tr>`).join('');
@@ -1274,7 +1249,7 @@ window.autoVta = function(){
   const warn=document.getElementById('vta-stock-warn');
   if(p){
     document.getElementById('vta-precio').value=p.precio;
-    if(R()==='admin'&&(p.duena==='Karen'||p.duena==='Samantha')) document.getElementById('vta-hermana').value=p.duena;
+    if(R()==='admin'||R()==='inversora') document.getElementById('vta-hermana').value=p.duena === 'Ambas' ? N() : p.duena;
     if((parseInt(p.stock)||0)<=3){warn.style.display='block';warn.textContent=`⚠️ Stock bajo: solo quedan ${p.stock} unidades`;}
     else warn.style.display='none';
     calcVta();
@@ -1311,19 +1286,22 @@ window.delVta = function(id){
   render();
 };
 
-// ════════════════════════════════════════
-// INVERSIÓN (sin cambios)
-// ════════════════════════════════════════
+// INVERSIÓN
 function renderInversion(){
   const n=N(),lista=R()==='inversora'?db.inversiones.filter(x=>x.hermana===n):db.inversiones;
   const cards=document.getElementById('inv-cards');
-  cards.innerHTML=['Karen','Samantha'].map((h,i)=>{
+  const socios = ['Wilson', 'Karen', 'Samantha'];
+  cards.innerHTML=socios.map((h,i)=>{
     const inv=db.inversiones.filter(x=>x.hermana===h).reduce((s,x)=>s+x.monto,0);
     const gan=db.ventas.filter(v=>v.hermana===h).reduce((s,v)=>s+(v.total-v.costo),0);
     const comp=db.compras.filter(c=>c.hermana===h).reduce((s,c)=>s+c.total,0);
     const neto=gan-inv;
     if(R()==='inversora'&&h!==n) return '';
-    return `<div class="herm-card ${i===0?'hc-a':'hc-b'}">
+    let clase='hc-a';
+    if(h==='Karen') clase='hc-a';
+    else if(h==='Samantha') clase='hc-b';
+    else clase='hc-c';
+    return `<div class="herm-card ${clase}">
       <div class="herm-name"><i class="ti ti-user-circle" style="font-size:18px"></i>${h}</div>
       <div class="herm-stats">
         <div class="hstat"><div class="hstat-val">${bs(inv)}</div><div class="hstat-lbl">Invertido</div></div>
@@ -1343,9 +1321,7 @@ window.guardarInv = function(){
 };
 window.delInv = function(id){ if(!confirm('¿Eliminar?')) return; db.inversiones=db.inversiones.filter(x=>x.id!==id); saveDB(); toast('Eliminado','warn'); render(); };
 
-// ════════════════════════════════════════
-// PRODUCTOS con filtro por categoría
-// ════════════════════════════════════════
+// PRODUCTOS
 window.previewImg = function(input){
   const file=input.files[0]; if(!file) return;
   if(file.size>2*1024*1024){ toast('Imagen muy grande, usa una menor a 2MB','warn'); return; }
@@ -1362,15 +1338,12 @@ window.autoPrecio = function(){
   if(c>0) document.getElementById('prod-precio').value=(c+AUMENTO).toFixed(2);
 };
 function renderProductos(){
-  const bap=document.getElementById('btn-ap'); if(bap) bap.style.display=R()==='admin'?'inline-flex':'none';
+  const bap=document.getElementById('btn-ap'); if(bap) bap.style.display='inline-flex';
   const q=(document.getElementById('prod-search')?.value||'').toLowerCase().trim();
   let lista=R()==='inversora'?db.productos.filter(p=>p.duena===N()||p.duena==='Ambas'):db.productos;
-  
-  // Filtro por categoría
   if(categoriaFiltro !== 'todas'){
     lista = lista.filter(p => p.cat === categoriaFiltro);
   }
-  // Búsqueda
   if(q){
     lista = lista.filter(p=>(p.nombre||'').toLowerCase().includes(q)||(p.codigo||'').toLowerCase().includes(q)||(p.cat||'').toLowerCase().includes(q));
   }
@@ -1397,19 +1370,18 @@ function renderProductos(){
   }).join('');
 }
 window.renderProductos = renderProductos;
-
 window.filtrarCategoria = function(cat, el){
   categoriaFiltro = cat;
   document.querySelectorAll('.cat-filt-btn').forEach(btn => btn.classList.remove('active'));
   if(el) el.classList.add('active');
   renderProductos();
 };
-
 window.guardarProd = function(){
   const nom=document.getElementById('prod-nom').value.trim(); if(!nom) return toast('Ingresa nombre del producto','error');
   const eid=document.getElementById('prod-id').value;
   const catSeleccionada = document.getElementById('prod-cat').value;
-  const p={id:eid||uid(),codigo:document.getElementById('prod-codigo').value.trim().toUpperCase(),nombre:nom,cat:catSeleccionada,duena:document.getElementById('prod-duena').value,costo:parseFloat(document.getElementById('prod-costo').value)||0,precio:parseFloat(document.getElementById('prod-precio').value)||0,stock:parseInt(document.getElementById('prod-stock').value)||0,notas:document.getElementById('prod-notas').value,img:document.getElementById('prod-img-data').value||''};
+  const duenaSeleccionada = document.getElementById('prod-duena').value;
+  const p={id:eid||uid(),codigo:document.getElementById('prod-codigo').value.trim().toUpperCase(),nombre:nom,cat:catSeleccionada,duena:duenaSeleccionada,costo:parseFloat(document.getElementById('prod-costo').value)||0,precio:parseFloat(document.getElementById('prod-precio').value)||0,stock:parseInt(document.getElementById('prod-stock').value)||0,notas:document.getElementById('prod-notas').value,img:document.getElementById('prod-img-data').value||''};
   const idx=db.productos.findIndex(x=>x.id===p.id);
   if(idx>=0) db.productos[idx]=p; else db.productos.unshift(p);
   saveDB(); closeM('m-producto'); toast(eid?'Producto actualizado ✓':'Producto agregado ✓'); render();
@@ -1435,9 +1407,7 @@ window.editProd = function(id){
 };
 window.delProd = function(id){ if(!confirm('¿Eliminar producto?')) return; db.productos=db.productos.filter(p=>p.id!==id); saveDB(); toast('Producto eliminado','warn'); render(); };
 
-// ════════════════════════════════════════
-// COMPRAS (sin cambios)
-// ════════════════════════════════════════
+// COMPRAS
 function renderCompras(){
   const bac=document.getElementById('btn-ac'); if(bac) bac.style.display='inline-flex';
   const tb=document.getElementById('tb-compras');
@@ -1454,12 +1424,9 @@ window.guardarCompra = function(){
 };
 window.delComp = function(id){ if(!confirm('¿Eliminar?')) return; db.compras=db.compras.filter(c=>c.id!==id); saveDB(); toast('Eliminado','warn'); render(); };
 
-// ════════════════════════════════════════
 // INIT
-// ════════════════════════════════════════
 setFbStatus('connecting');
 startFirebaseListener();
-
 </script>
 </body>
 </html>
