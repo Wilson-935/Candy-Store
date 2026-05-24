@@ -1,3 +1,4 @@
+// ================== app.js ==================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 import firebaseConfig from './firebase-config.js';
@@ -11,6 +12,9 @@ const PINS   = { wilson:'1234', karen:'1111', samantha:'2222', mama:'3333' };
 const NAMES  = { wilson:'Wilson', karen:'Karen', samantha:'Samantha', mama:'Mamá' };
 const ROLES  = { wilson:'admin', karen:'inversora', samantha:'inversora', mama:'operadora' };
 const AUMENTO = 80;
+
+// ✅ Ahora Wilson también es opción (puede tener productos y transacciones)
+const HERMANAS = ['Wilson', 'Karen', 'Samantha'];
 
 let cu = null, selU = null, pfiltro = 'todos', vtafiltro = 'todas';
 let categoriaFiltro = 'todas';
@@ -98,7 +102,7 @@ function saveDB(){
 }
 window.saveDB = saveDB;
 
-// LOGIN (sin cambios)
+// LOGIN
 function selPerfil(u, ev){
   selU = u;
   const btn = ev.currentTarget;
@@ -197,27 +201,32 @@ function nav(pg){
   render();
 }
 
-// MODALES (sin cambios estructurales)
+// MODALES (con selects que incluyen a Wilson)
 function openM(id){
   if(id==='m-venta'){
     document.getElementById('vta-prod').innerHTML='<option value="">— seleccionar —</option>'+
       db.productos.map(p=>`<option value="${p.id}">${p.codigo?'['+p.codigo+'] ':''} ${p.nombre} · Stock:${p.stock}</option>`).join('');
-    if(R()==='inversora') document.getElementById('vta-hermana').value=N();
-    else if(R()==='admin') document.getElementById('vta-hermana').value='Wilson';
+    const selectVta = document.getElementById('vta-hermana');
+    selectVta.innerHTML = HERMANAS.map(h => `<option value="${h}">${h}</option>`).join('');
+    if(R()==='inversora') selectVta.value = N();
+    else if(R()==='admin') selectVta.value = HERMANAS[0];
     document.getElementById('vta-stock-warn').style.display='none';
   }
   if(id==='m-compra'){
     document.getElementById('comp-prod').innerHTML='<option value="">— seleccionar —</option>'+
       db.productos.map(p=>`<option value="${p.id}">${p.nombre}</option>`).join('');
-    if(R()==='inversora') document.getElementById('comp-herm').value=N();
-    else if(R()==='admin') document.getElementById('comp-herm').value='Wilson';
+    const selectComp = document.getElementById('comp-herm');
+    selectComp.innerHTML = HERMANAS.map(h => `<option value="${h}">${h}</option>`).join('');
+    if(R()==='inversora') selectComp.value = N();
+    else if(R()==='admin') selectComp.value = HERMANAS[0];
   }
   if(id==='m-inversion'){
     document.getElementById('inv-fecha').value=today();
-    const iq=document.getElementById('inv-quien');
-    if(R()==='inversora'){iq.value=N();iq.disabled=true;}
-    else if(R()==='admin'){iq.value='Wilson';iq.disabled=false;}
-    else iq.disabled=false;
+    const iq = document.getElementById('inv-quien');
+    iq.innerHTML = HERMANAS.map(h => `<option value="${h}">${h}</option>`).join('');
+    if(R()==='inversora'){ iq.value = N(); iq.disabled = true; }
+    else if(R()==='admin'){ iq.value = HERMANAS[0]; iq.disabled = false; }
+    else iq.disabled = false;
   }
   if(id==='m-pedido'){
     document.getElementById('ped-m-title').textContent='Nuevo pedido';
@@ -230,8 +239,10 @@ function openM(id){
     document.getElementById('ped-pagado').value='0';
     document.getElementById('ped-estado').value='pendiente';
     document.getElementById('ped-entrega').value='entrega';
-    document.getElementById('ped-duena').value='Karen';
-    const ps=document.getElementById('ped-prod-sel');
+    const selectDuena = document.getElementById('ped-duena');
+    selectDuena.innerHTML = HERMANAS.map(h => `<option value="${h}">${h}</option>`).join('');
+    selectDuena.value = HERMANAS[0];
+    const ps = document.getElementById('ped-prod-sel');
     ps.innerHTML='<option value="">— seleccionar del stock —</option>'+
       db.productos.map(p=>`<option value="${p.id}">${p.nombre} (stock:${p.stock}) — ${bs(p.precio)}</option>`).join('');
   }
@@ -241,9 +252,11 @@ function openM(id){
     ['prod-codigo','prod-nom','prod-notas'].forEach(i=>document.getElementById(i).value='');
     ['prod-costo','prod-precio'].forEach(i=>document.getElementById(i).value='');
     document.getElementById('prod-stock').value='0';
-    if(R()==='admin') document.getElementById('prod-duena').value='Wilson';
-    else if(R()==='inversora') document.getElementById('prod-duena').value=N();
-    else document.getElementById('prod-duena').value='Karen';
+    const selectDuenaProd = document.getElementById('prod-duena');
+    selectDuenaProd.innerHTML = HERMANAS.map(h => `<option value="${h}">${h}</option>`).join('');
+    if(R()==='inversora') selectDuenaProd.value = N();
+    else if(R()==='admin') selectDuenaProd.value = HERMANAS[0];
+    else selectDuenaProd.value = HERMANAS[0];
     document.getElementById('prod-img-data').value='';
     document.getElementById('prod-cat').value='CEPILLOS & DEPILADORES';
     const prev=document.getElementById('prod-img-prev');prev.src='';prev.style.display='none';
@@ -252,7 +265,7 @@ function openM(id){
 }
 function closeM(id){ document.getElementById(id).classList.remove('open'); }
 
-// RENDER (sin cambios)
+// RENDER
 function render(){
   const pg=document.querySelector('.page.active'); if(!pg) return;
   const id=pg.id.replace('pg-','');
@@ -267,7 +280,7 @@ function render(){
 }
 window.render = render;
 
-// INICIO (sin cambios relevantes)
+// INICIO (adaptado para mostrar todas las hermanas)
 function renderInicio(){
   const t=today();
   document.getElementById('ini-title').textContent='Hola, '+N()+' ✨';
@@ -282,40 +295,29 @@ function renderInicio(){
       <div class="metric"><div class="metric-lbl">📈 Ganancia hoy</div><div class="metric-val" style="color:${gh>=0?'var(--g)':'var(--r)'}">${bs(gh)}</div><div class="metric-sub">estimada</div></div>
       <div class="metric"><div class="metric-lbl">📋 Pedidos pendientes</div><div class="metric-val">${pp}</div><div class="metric-sub">por entregar</div></div>
       <div class="metric"><div class="metric-lbl">📦 Stock total</div><div class="metric-val">${stk}</div><div class="metric-sub">unidades</div></div>`;
-    const misVentas=db.ventas.filter(v=>v.hermana==='Wilson'), misIngresos=misVentas.reduce((s,v)=>s+v.total,0);
-    const misGanancias=misVentas.reduce((s,v)=>s+(v.total-v.costo),0);
-    const misProd=db.productos.filter(p=>p.duena==='Wilson'), misStock=misProd.reduce((s,p)=>s+(parseInt(p.stock)||0),0);
-    const misInv=db.inversiones.filter(x=>x.hermana==='Wilson').reduce((s,x)=>s+x.monto,0);
-    const pendientesHtml = db.pedidos.filter(p=>p.estado==='pendiente').slice(0,5).map(p=>{
-        const saldo = (p.total||0)-(p.pagado||0);
-        return `<tr><td style="font-weight:800">${p.cli}</td><td style="font-size:11px">${(p.productoTexto||p.prod||'').slice(0,22)}</td><td><span class="badge bv">${p.duena||'?'}</span></td><td>${saldo>0?`<span class="badge ba">${bs(saldo)}</span>`:'<span class="badge bg">✅</span>'}</td></tr>`;
-      }).join('') || '<tr><td colspan="4"><div class="empty" style="padding:20px"><i class="ti ti-check"></i><p>Sin pendientes</p></div></td></tr>';
-    
-    const stockBajo = db.productos.filter(p=>(parseInt(p.stock)||0)<=2);
-    let stockBajoHtml = '';
-    if(stockBajo.length){
-      stockBajoHtml = `<div class="card"><div class="card-hdr">⚠️ Stock bajo (≤2)</div>
-        <div class="table-responsive">
-          <table>
-            <thead><tr><th>Producto</th><th>Stock</th><th>Dueña</th></tr></thead>
-            <tbody>
-              ${stockBajo.map(p=>`<tr><td style="font-weight:800">${p.nombre}</td><td><span class="badge br2">${p.stock}</span></td><td><span class="badge bv">${p.duena}</span></td></tr>`).join('')}
-            </tbody>
-          </table>
-        </div>
-      </div>`;
-    }
-    ex.innerHTML=`
-      <div class="card"><div class="card-hdr">📊 Mi rendimiento (Wilson)</div>
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:16px">
-        <div class="metric" style="margin:0"><div class="metric-lbl">💰 Mis ventas</div><div class="metric-val">${bs(misIngresos)}</div></div>
-        <div class="metric" style="margin:0"><div class="metric-lbl">📈 Mi ganancia</div><div class="metric-val" style="color:${misGanancias>=0?'var(--g)':'var(--r)'}">${bs(misGanancias)}</div></div>
-        <div class="metric" style="margin:0"><div class="metric-lbl">💸 Mi inversión</div><div class="metric-val">${bs(misInv)}</div></div>
-        <div class="metric" style="margin:0"><div class="metric-lbl">📦 Mis productos</div><div class="metric-val">${misStock}</div></div>
+    const resumen = HERMANAS.map(h => {
+      const ventas = db.ventas.filter(v => v.hermana === h);
+      const ingresos = ventas.reduce((s,v)=>s+v.total,0);
+      const ganancias = ventas.reduce((s,v)=>s+(v.total-v.costo),0);
+      const inversiones = db.inversiones.filter(i => i.hermana === h).reduce((s,i)=>s+i.monto,0);
+      const neto = ganancias - inversiones;
+      return `<div class="metric" style="margin:0"><div class="metric-lbl">${h}</div><div class="metric-val">${bs(ingresos)}</div><div class="metric-sub">Neto: ${bs(neto)}</div></div>`;
+    }).join('');
+    ex.innerHTML = `
+      <div class="card"><div class="card-hdr">📊 Resumen por hermana</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:16px">
+        ${resumen}
       </div></div>
       <div class="card"><div class="card-hdr">⏳ Pedidos pendientes</div>
-      <div class="table-responsive"><table><thead><tr><th>Cliente</th><th>Producto</th><th>Dueña</th><th>Saldo</th></tr></thead><tbody>${pendientesHtml}</tbody></table></div></div>
-      ${stockBajoHtml}`;
+      <div class="table-responsive"><tr><thead><tr><th>Cliente</th><th>Producto</th><th>Dueña</th><th>Saldo</th></tr></thead><tbody>
+      ${db.pedidos.filter(p=>p.estado==='pendiente').slice(0,5).map(p=>{
+        const saldo = (p.total||0)-(p.pagado||0);
+        return `<tr><td style="font-weight:800">${p.cli}</td><td style="font-size:11px">${(p.productoTexto||p.prod||'').slice(0,22)}</td><td><span class="badge bv">${p.duena||'?'}</span></td><td>${saldo>0?`<span class="badge ba">${bs(saldo)}</span>`:'<span class="badge bg">✅</span>'}</td></tr>`;
+      }).join('') || '<tr><td colspan="4"><div class="empty" style="padding:20px"><i class="ti ti-check"></i><p>Sin pendientes</p></div></td></tr>'}
+      </tbody></table></div></div>
+      <div class="card"><div class="card-hdr">⚠️ Stock bajo (≤2)</div>
+      <div class="table-responsive">${(db.productos.filter(p=>(parseInt(p.stock)||0)<=2).length? `<table><thead><tr><th>Producto</th><th>Stock</th><th>Dueña</th></tr></thead><tbody>${db.productos.filter(p=>(parseInt(p.stock)||0)<=2).map(p=>`<tr><td style="font-weight:800">${p.nombre}</td><td><span class="badge br2">${p.stock}</span></td><td><span class="badge bv">${p.duena}</span></td></tr>`).join('')}</tbody></table>`:'<div class="empty"><p>✅ Todo en buen stock</p></div>')}
+      </div></div>`;
   }
   else if(R()==='inversora'){
     const vs=db.ventas.filter(v=>v.hermana===N()),ing=vs.reduce((s,v)=>s+v.total,0),gan=vs.reduce((s,v)=>s+(v.total-v.costo),0);
@@ -328,7 +330,7 @@ function renderInicio(){
       <div class="metric"><div class="metric-lbl">📦 Mis productos</div><div class="metric-val">${stk}</div><div class="metric-sub">en stock</div></div>`;
     ex.innerHTML=`<div class="card"><div class="card-hdr">Mis productos en stock</div>
       <div class="table-responsive"><table><thead><tr><th>Producto</th><th>Stock</th><th>Precio</th></tr></thead><tbody>
-      ${mis.length?mis.map(p=>`<tr><td style="font-weight:800">${p.nombre}</td><td><span class="badge ${(parseInt(p.stock)||0)<=3?'br2':(parseInt(p.stock)||0)<=10?'ba':'bg'}">${p.stock}</span></td><td style="font-weight:900;color:var(--p)">${bs(p.precio)}</td></tr>`).join(''):`<tr><td colspan="3"><div class="empty" style="padding:20px"><i class="ti ti-package"></i><p>Sin productos</p></div></td></tr>`}
+      ${mis.length?mis.map(p=>`<tr><td style="font-weight:800">${p.nombre}</td><td><span class="badge ${(parseInt(p.stock)||0)<=3?'br2':(parseInt(p.stock)||0)<=10?'ba':'bg'}">${p.stock}</span></td><td style="font-weight:900;color:var(--p)">${bs(p.precio)}</td></tr>`).join(''):`<tr><td colspan="3"><div class="empty" style="padding:20px"><i class="ti ti-package"></i><p>Sin productos</p></div></td></table>`}
       </tbody></table></div></div>`;
   }
   else {
@@ -343,7 +345,7 @@ function renderInicio(){
   }
 }
 
-// PEDIDOS (con lógica de stock mejorada)
+// PEDIDOS (sin cambios de lógica, solo los selects ahora incluyen Wilson)
 function renderPedidos(){
   const isAdmin = (R()==='admin');
   const bnp = document.getElementById('btn-np'); if(bnp) bnp.style.display='inline-flex';
@@ -364,7 +366,6 @@ function renderPedidos(){
     else stag = `<span class="badge ba">⏳ Pendiente</span>`;
     const aum = p.precioVenta && p.costoUnitario ? p.precioVenta - p.costoUnitario : null;
     const waBtn = p.wa ? `<a href="https://wa.me/${p.wa.replace(/\D/g,'')}" target="_blank" class="btn btn-sm btn-wa"><i class="ti ti-brand-whatsapp"></i> WhatsApp</a>` : '';
-    // Botón cancelar solo si está pendiente
     const cancelBtn = (p.estado === 'pendiente' && isAdmin) ? `<button class="btn btn-sm btn-danger" onclick="cancelarPedido('${p.id}')"><i class="ti ti-ban"></i> Cancelar</button>` : '';
     return `<div class="ped-card estado-${p.estado}">
       <div class="ped-top">
@@ -434,7 +435,7 @@ function calcPedSaldo(){
   document.getElementById('ped-saldo').value = bs(Math.max(0, total - pagado));
 }
 
-// Guardar pedido (crear o editar) con gestión de stock
+// Guardar pedido (con gestión de stock)
 function guardarPed(){
   const cli = document.getElementById('ped-cli').value.trim();
   if(!cli) return toast('Ingresa el nombre del cliente','error');
@@ -452,72 +453,52 @@ function guardarPed(){
   const wa = document.getElementById('ped-wa').value;
   const dir = document.getElementById('ped-dir').value;
   const notas = document.getElementById('ped-notas').value;
-  const eid = document.getElementById('ped-id').value; // si existe, es edición
+  const eid = document.getElementById('ped-id').value;
 
-  // Buscar pedido original si es edición
   let pedidoOriginal = null;
   if(eid) pedidoOriginal = db.pedidos.find(p => p.id === eid);
 
-  // Validar stock solo si se seleccionó un producto real
   if(prodId) {
     const producto = db.productos.find(p => p.id === prodId);
     if(!producto) return toast('El producto seleccionado ya no existe', 'error');
     let stockNecesario = cant;
-    let stockDisponible = producto.stock;
-    // Si es edición, hay que considerar el stock que se va a liberar del pedido anterior
     if(pedidoOriginal && pedidoOriginal.productoId === prodId) {
-      // Mismo producto: calcular diferencia
       const cantOriginal = pedidoOriginal.cantidad || 1;
       if(cant > cantOriginal) {
         stockNecesario = cant - cantOriginal;
-        stockDisponible = producto.stock; // stock actual (ya incluye lo que no se descontó?)
-        // NOTA: el stock actual ya está descontado desde que se creó el pedido original.
-        // Por lo tanto, para aumentar cantidad, necesitamos más stock disponible.
-        if(stockDisponible < stockNecesario) {
-          toast(`Stock insuficiente para aumentar la cantidad. Disponible: ${stockDisponible}, necesita: ${stockNecesario}`, 'error');
+        if(producto.stock < stockNecesario) {
+          toast(`Stock insuficiente para aumentar la cantidad. Disponible: ${producto.stock}, necesita: ${stockNecesario}`, 'error');
           return;
         }
       } else if(cant < cantOriginal) {
-        // Disminuye cantidad: reponemos la diferencia (no hay problema de stock)
         stockNecesario = 0;
+        producto.stock += (cantOriginal - cant);
       } else {
         stockNecesario = 0;
       }
     } else if(pedidoOriginal && pedidoOriginal.productoId !== prodId) {
-      // Cambió de producto: reponer stock del anterior y descontar del nuevo
-      // Reponer stock del producto anterior
       const prodAnterior = db.productos.find(p => p.id === pedidoOriginal.productoId);
       if(prodAnterior) {
         prodAnterior.stock += (pedidoOriginal.cantidad || 1);
       }
-      // Verificar stock del nuevo producto
       if(producto.stock < cant) {
         toast(`Stock insuficiente para "${producto.nombre}". Disponible: ${producto.stock}, necesita: ${cant}`, 'error');
-        // Revertir la reposición del anterior (no es fácil, pero mejor no hacer cambios aún)
         if(prodAnterior) prodAnterior.stock -= (pedidoOriginal.cantidad || 1);
         return;
       }
       stockNecesario = cant;
-      stockDisponible = producto.stock;
     } else {
-      // Nuevo pedido
       if(producto.stock < cant) {
         toast(`Stock insuficiente para "${producto.nombre}". Disponible: ${producto.stock}, necesita: ${cant}`, 'error');
         return;
       }
       stockNecesario = cant;
     }
-
-    // Aplicar descuento de stock (solo si es necesario)
     if(stockNecesario > 0) {
       producto.stock -= stockNecesario;
-    } else if(stockNecesario < 0) {
-      // Reponer (no debería ocurrir porque manejamos cant menor arriba)
-      producto.stock += Math.abs(stockNecesario);
     }
   }
 
-  // Construir objeto pedido
   const pedido = {
     id: eid || uid(),
     cli,
@@ -544,14 +525,12 @@ function guardarPed(){
   } else {
     db.pedidos.unshift(pedido);
   }
-
   saveDB();
   closeM('m-pedido');
   toast(eid ? 'Pedido actualizado ✓' : 'Pedido guardado ✓');
   render();
 }
 
-// Nueva función: Cancelar pedido (reponer stock y cambiar estado a cancelado)
 function cancelarPedido(id){
   const ped = db.pedidos.find(p => p.id === id);
   if(!ped) return;
@@ -580,7 +559,7 @@ function editPed(id){
     document.getElementById('ped-cli').value = p.cli;
     document.getElementById('ped-wa').value = p.wa || '';
     document.getElementById('ped-prod').value = p.productoTexto || p.prod || '';
-    document.getElementById('ped-duena').value = p.duena || 'Karen';
+    document.getElementById('ped-duena').value = p.duena || HERMANAS[0];
     document.getElementById('ped-costo').value = p.costoUnitario || 0;
     document.getElementById('ped-pv').value = p.precioVenta || 0;
     document.getElementById('ped-cant').value = p.cantidad || 1;
@@ -601,9 +580,6 @@ function entregarPedido(id){
   if(!ped) return;
   if(ped.estado === 'entregado') return toast('Este pedido ya fue entregado', 'warn');
   if(ped.estado === 'cancelado') return toast('No se puede entregar un pedido cancelado', 'error');
-  
-  // Ya no se descuenta stock porque se descontó al crear el pedido
-  // Solo se crea la venta automática si tiene productoId
   if(ped.productoId && ped.cantidad > 0) {
     const prod = db.productos.find(p => p.id === ped.productoId);
     if(prod) {
@@ -637,8 +613,6 @@ function reabrirPedido(id){
   if(!ped) return;
   if(ped.estado !== 'entregado') return toast('Solo se pueden reabrir pedidos entregados', 'warn');
   ped.estado = 'pendiente';
-  // NOTA: al reabrir, el stock ya está descontado. Para mantener coherencia, no se repone automáticamente.
-  // El administrador deberá ajustar stock manualmente si es necesario.
   saveDB();
   toast('Pedido reabierto (stock no revertido automáticamente, ajusta manualmente si es necesario)', 'warn');
   render();
@@ -648,8 +622,6 @@ function delPed(id){
   if(!confirm('¿Eliminar pedido? Si está entregado, también se eliminará la venta asociada y se repondrá el stock.')) return;
   const ped = db.pedidos.find(p => p.id === id);
   if(!ped) return;
-  
-  // Reponer stock si el pedido tiene producto y no estaba entregado (o incluso si estaba entregado, para mantener coherencia)
   if(ped.productoId && ped.cantidad && ped.estado !== 'entregado') {
     const prod = db.productos.find(p => p.id === ped.productoId);
     if(prod) {
@@ -657,29 +629,25 @@ function delPed(id){
       toast(`Stock repuesto: +${ped.cantidad} de ${prod.nombre}`, 'success');
     }
   } else if(ped.productoId && ped.cantidad && ped.estado === 'entregado') {
-    // Si estaba entregado, también eliminamos la venta asociada (buscar por notas que contengan el id)
     const ventaAsociada = db.ventas.find(v => v.notas && v.notas.includes(ped.id));
     if(ventaAsociada) {
       const idxV = db.ventas.findIndex(v => v.id === ventaAsociada.id);
       if(idxV !== -1) db.ventas.splice(idxV, 1);
-      // Además reponemos stock porque la venta se elimina
       const prod = db.productos.find(p => p.id === ped.productoId);
       if(prod) prod.stock += ped.cantidad;
       toast(`Venta asociada eliminada y stock repuesto`, 'warn');
     } else {
-      // Si no se encuentra venta, igual reponemos stock (por si acaso)
       const prod = db.productos.find(p => p.id === ped.productoId);
       if(prod) prod.stock += ped.cantidad;
     }
   }
-  
   db.pedidos = db.pedidos.filter(p => p.id !== id);
   saveDB();
   toast('Pedido eliminado', 'warn');
   render();
 }
 
-// VENTAS (sin cambios mayores)
+// VENTAS
 function getVtaFiltro(){
   const t=today(),d=new Date();
   if(vtafiltro==='hoy') return v=>v.fecha===t;
@@ -700,17 +668,13 @@ function renderVentas(){
   const filt=getVtaFiltro();
   const lista=(R()==='inversora'?db.ventas.filter(v=>v.hermana===N()):db.ventas).filter(filt);
   const rc=document.getElementById('res-herm');
-  const socios = ['Wilson', 'Karen', 'Samantha'];
   if(R()==='admin'||R()==='operadora'){
-    rc.innerHTML=socios.map((h,i)=>{
+    rc.innerHTML=HERMANAS.map((h,i)=>{
       const vs=db.ventas.filter(v=>v.hermana===h&&filt(v));
       const ing=vs.reduce((s,v)=>s+v.total,0),gan=vs.reduce((s,v)=>s+(v.total-v.costo),0);
       const inv=db.inversiones.filter(x=>x.hermana===h).reduce((s,x)=>s+x.monto,0);
       const neto=gan-inv;
-      let clase='hc-a';
-      if(h==='Karen') clase='hc-a';
-      else if(h==='Samantha') clase='hc-b';
-      else clase='hc-c';
+      let clase = (h==='Karen')?'hc-a':(h==='Samantha')?'hc-b':'hc-c';
       return `<div class="herm-card ${clase}">
         <div class="herm-name"><i class="ti ti-user-circle" style="font-size:18px"></i>${h}</div>
         <div class="herm-stats">
@@ -743,7 +707,7 @@ function renderVentas(){
     <td><span class="badge ${v.hermana==='Wilson'?'bgr':(v.hermana==='Karen'?'bv':'bb')}">${v.hermana}</span></td>
     <td>${fmtD(v.fecha)}</td>
     <td>${R()==='admin'?`<button class="btn btn-xs btn-danger" onclick="delVta('${v.id}')"><i class="ti ti-trash"></i></button>`:''}</td>
-  </tr>`).join('');
+  </table>`).join('');
 }
 function autoVta(){
   const pid=document.getElementById('vta-prod').value,p=db.productos.find(x=>x.id===pid);
@@ -786,21 +750,17 @@ function delVta(id){
   render();
 }
 
-// INVERSIÓN (sin cambios)
+// INVERSIÓN
 function renderInversion(){
   const n=N(),lista=R()==='inversora'?db.inversiones.filter(x=>x.hermana===n):db.inversiones;
   const cards=document.getElementById('inv-cards');
-  const socios = ['Wilson', 'Karen', 'Samantha'];
-  cards.innerHTML=socios.map((h,i)=>{
+  cards.innerHTML=HERMANAS.map((h,i)=>{
     const inv=db.inversiones.filter(x=>x.hermana===h).reduce((s,x)=>s+x.monto,0);
     const gan=db.ventas.filter(v=>v.hermana===h).reduce((s,v)=>s+(v.total-v.costo),0);
     const comp=db.compras.filter(c=>c.hermana===h).reduce((s,c)=>s+c.total,0);
     const neto=gan-inv;
     if(R()==='inversora'&&h!==n) return '';
-    let clase='hc-a';
-    if(h==='Karen') clase='hc-a';
-    else if(h==='Samantha') clase='hc-b';
-    else clase='hc-c';
+    let clase = (h==='Karen')?'hc-a':(h==='Samantha')?'hc-b':'hc-c';
     return `<div class="herm-card ${clase}">
       <div class="herm-name"><i class="ti ti-user-circle" style="font-size:18px"></i>${h}</div>
       <div class="herm-stats">
@@ -821,7 +781,7 @@ function guardarInv(){
 }
 function delInv(id){ if(!confirm('¿Eliminar?')) return; db.inversiones=db.inversiones.filter(x=>x.id!==id); saveDB(); toast('Eliminado','warn'); render(); }
 
-// PRODUCTOS (con mejora de stock al editar)
+// PRODUCTOS
 function previewImg(input){
   const file=input.files[0]; if(!file) return;
   if(file.size>2*1024*1024){ toast('Imagen muy grande, usa una menor a 2MB','warn'); return; }
@@ -902,12 +862,10 @@ function guardarProd(){
   
   const idx = db.productos.findIndex(x => x.id === p.id);
   if(idx >= 0) {
-    // Edición: detectar aumento de stock
     const viejoStock = productoExistente.stock;
     if(nuevoStock > viejoStock) {
       const incremento = nuevoStock - viejoStock;
       const totalInversion = incremento * nuevoCosto;
-      // Registrar compra automática
       const compraAuto = {
         id: uid(),
         pid: p.id,
@@ -919,7 +877,6 @@ function guardarProd(){
         fecha: today()
       };
       db.compras.unshift(compraAuto);
-      // Registrar inversión automática
       const inversionAuto = {
         id: uid(),
         hermana: p.duena,
@@ -932,7 +889,6 @@ function guardarProd(){
     }
     db.productos[idx] = p;
   } else {
-    // Nuevo producto: si tiene stock > 0, registrar compra e inversión inicial
     db.productos.unshift(p);
     if(p.stock > 0) {
       const totalInversion = p.stock * p.costo;
@@ -969,7 +925,7 @@ function editProd(id){
     document.getElementById('prod-codigo').value=p.codigo||'';
     document.getElementById('prod-nom').value=p.nombre;
     document.getElementById('prod-cat').value=p.cat || 'CEPILLOS & DEPILADORES';
-    document.getElementById('prod-duena').value=p.duena||'Karen';
+    document.getElementById('prod-duena').value=p.duena||HERMANAS[0];
     document.getElementById('prod-costo').value=p.costo;
     document.getElementById('prod-precio').value=p.precio;
     document.getElementById('prod-stock').value=p.stock;
@@ -980,11 +936,10 @@ function editProd(id){
   },50);
 }
 function delProd(id){ if(!confirm('¿Eliminar producto? También se eliminarán compras e inversiones asociadas (solo las automáticas).')) return; 
-  // Opcional: Eliminar compras e inversiones que hagan referencia a este producto (por simplificar, no se hace)
   db.productos=db.productos.filter(p=>p.id!==id); saveDB(); toast('Producto eliminado','warn'); render(); 
 }
 
-// COMPRAS (con inversión automática)
+// COMPRAS
 function renderCompras(){
   const bac=document.getElementById('btn-ac'); if(bac) bac.style.display='inline-flex';
   const tb=document.getElementById('tb-compras');
@@ -999,7 +954,6 @@ function guardarCompra(){
   const total = cant * precio;
   const hermana = document.getElementById('comp-herm').value;
   
-  // Registrar compra
   db.compras.unshift({
     id: uid(),
     pid,
@@ -1010,10 +964,8 @@ function guardarCompra(){
     hermana,
     fecha: today()
   });
-  // Actualizar stock y costo del producto
   prod.stock = (parseInt(prod.stock) || 0) + cant;
-  prod.costo = precio; // actualiza el costo unitario al último precio de compra
-  // Registrar inversión automática
+  prod.costo = precio;
   db.inversiones.unshift({
     id: uid(),
     hermana: hermana,
@@ -1029,9 +981,7 @@ function delComp(id){ if(!confirm('¿Eliminar compra? También se eliminará la 
     const prod = db.productos.find(p => p.id === compra.pid);
     if(prod) {
       prod.stock = Math.max(0, (parseInt(prod.stock) || 0) - compra.cant);
-      // Opcional: revertir costo si era el último precio, pero es complejo. Se deja así.
     }
-    // Eliminar inversión asociada (por descripción)
     const invIndex = db.inversiones.findIndex(i => i.desc === `Compra de ${compra.cant} unidad(es) de ${compra.pnom}`);
     if(invIndex !== -1) db.inversiones.splice(invIndex, 1);
   }
