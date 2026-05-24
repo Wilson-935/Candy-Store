@@ -13,7 +13,7 @@ const NAMES  = { wilson:'Wilson', karen:'Karen', samantha:'Samantha', mama:'Mam�
 const ROLES  = { wilson:'admin', karen:'inversora', samantha:'inversora', mama:'operadora' };
 const AUMENTO = 80;
 
-// ✅ Ahora Wilson también es opción (puede tener productos y transacciones)
+// ✅ Wilson, Karen y Samantha pueden ser dueñas de productos y transacciones
 const HERMANAS = ['Wilson', 'Karen', 'Samantha'];
 
 let cu = null, selU = null, pfiltro = 'todos', vtafiltro = 'todas';
@@ -146,7 +146,7 @@ function logout(){
   document.getElementById('lerr').textContent='';
 }
 
-// NAV (sin cambios)
+// NAV
 const NAV_CFG = {
   admin:[
     {id:'inicio',icon:'ti-home',lbl:'Inicio'},
@@ -280,7 +280,7 @@ function render(){
 }
 window.render = render;
 
-// INICIO (adaptado para mostrar todas las hermanas)
+// ========== INICIO (CORREGIDO: tabla de pedidos pendientes bien formada) ==========
 function renderInicio(){
   const t=today();
   document.getElementById('ini-title').textContent='Hola, '+N()+' ✨';
@@ -303,21 +303,75 @@ function renderInicio(){
       const neto = ganancias - inversiones;
       return `<div class="metric" style="margin:0"><div class="metric-lbl">${h}</div><div class="metric-val">${bs(ingresos)}</div><div class="metric-sub">Neto: ${bs(neto)}</div></div>`;
     }).join('');
+    
+    // --- Tabla de pedidos pendientes (corregida) ---
+    const pendientes = db.pedidos.filter(p => p.estado === 'pendiente').slice(0,5);
+    let pendientesHtml = '';
+    if (pendientes.length === 0) {
+      pendientesHtml = '<tr><td colspan="4"><div class="empty" style="padding:20px"><i class="ti ti-check"></i><p>Sin pendientes</p></div></td></tr>';
+    } else {
+      pendientes.forEach(p => {
+        const cliente = (p.cli || '').replace(/[<>]/g, '');
+        const producto = ((p.productoTexto || p.prod || '')).slice(0, 30).replace(/[<>]/g, '');
+        const duena = (p.duena && HERMANAS.includes(p.duena)) ? p.duena : 'Sin asignar';
+        const saldo = (p.total || 0) - (p.pagado || 0);
+        const saldoHtml = saldo > 0 ? `<span class="badge ba">${bs(saldo)}</span>` : '<span class="badge bg">✅</span>';
+        pendientesHtml += `
+          <tr>
+            <td style="font-weight:800; white-space: normal; word-break: break-word;">${cliente}</td>
+            <td style="font-size:11px; white-space: normal; word-break: break-word;">${producto}</td>
+            <td><span class="badge bv">${duena}</span></td>
+            <td>${saldoHtml}</td>
+          </tr>
+        `;
+      });
+    }
+    
+    // --- Stock bajo ---
+    const productosBajoStock = db.productos.filter(p => (parseInt(p.stock)||0) <= 2);
+    let stockBajoHtml = '';
+    if (productosBajoStock.length) {
+      stockBajoHtml = `
+        <div class="table-responsive">
+          <table style="min-width: 300px;">
+            <thead><tr><th>Producto</th><th>Stock</th><th>Dueña</th></tr></thead>
+            <tbody>
+              ${productosBajoStock.map(p => `
+                <tr>
+                  <td style="font-weight:800">${p.nombre}</td>
+                  <td><span class="badge br2">${p.stock}</span></td>
+                  <td><span class="badge bv">${p.duena}</span></td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    } else {
+      stockBajoHtml = '<div class="empty"><p>✅ Todo en buen stock</p></div>';
+    }
+    
     ex.innerHTML = `
       <div class="card"><div class="card-hdr">📊 Resumen por hermana</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:16px">
         ${resumen}
       </div></div>
-      <div class="card"><div class="card-hdr">⏳ Pedidos pendientes</div>
-      <div class="table-responsive"><tr><thead><tr><th>Cliente</th><th>Producto</th><th>Dueña</th><th>Saldo</th></tr></thead><tbody>
-      ${db.pedidos.filter(p=>p.estado==='pendiente').slice(0,5).map(p=>{
-        const saldo = (p.total||0)-(p.pagado||0);
-        return `<tr><td style="font-weight:800">${p.cli}</td><td style="font-size:11px">${(p.productoTexto||p.prod||'').slice(0,22)}</td><td><span class="badge bv">${p.duena||'?'}</span></td><td>${saldo>0?`<span class="badge ba">${bs(saldo)}</span>`:'<span class="badge bg">✅</span>'}</td></tr>`;
-      }).join('') || '<tr><td colspan="4"><div class="empty" style="padding:20px"><i class="ti ti-check"></i><p>Sin pendientes</p></div></td></tr>'}
-      </tbody></table></div></div>
-      <div class="card"><div class="card-hdr">⚠️ Stock bajo (≤2)</div>
-      <div class="table-responsive">${(db.productos.filter(p=>(parseInt(p.stock)||0)<=2).length? `<table><thead><tr><th>Producto</th><th>Stock</th><th>Dueña</th></tr></thead><tbody>${db.productos.filter(p=>(parseInt(p.stock)||0)<=2).map(p=>`<tr><td style="font-weight:800">${p.nombre}</td><td><span class="badge br2">${p.stock}</span></td><td><span class="badge bv">${p.duena}</span></td></tr>`).join('')}</tbody></table>`:'<div class="empty"><p>✅ Todo en buen stock</p></div>')}
-      </div></div>`;
+      <div class="card">
+        <div class="card-hdr">⏳ Pedidos pendientes</div>
+        <div class="table-responsive" style="overflow-x: auto;">
+          <table style="min-width: 400px; width: 100%;">
+            <thead>
+              <tr><th>Cliente</th><th>Producto</th><th>Dueña</th><th>Saldo</th></tr>
+            </thead>
+            <tbody>${pendientesHtml}</tbody>
+          </table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hdr">⚠️ Stock bajo (≤2)</div>
+        ${stockBajoHtml}
+      </div>
+    `;
   }
   else if(R()==='inversora'){
     const vs=db.ventas.filter(v=>v.hermana===N()),ing=vs.reduce((s,v)=>s+v.total,0),gan=vs.reduce((s,v)=>s+(v.total-v.costo),0);
@@ -330,7 +384,7 @@ function renderInicio(){
       <div class="metric"><div class="metric-lbl">📦 Mis productos</div><div class="metric-val">${stk}</div><div class="metric-sub">en stock</div></div>`;
     ex.innerHTML=`<div class="card"><div class="card-hdr">Mis productos en stock</div>
       <div class="table-responsive"><table><thead><tr><th>Producto</th><th>Stock</th><th>Precio</th></tr></thead><tbody>
-      ${mis.length?mis.map(p=>`<tr><td style="font-weight:800">${p.nombre}</td><td><span class="badge ${(parseInt(p.stock)||0)<=3?'br2':(parseInt(p.stock)||0)<=10?'ba':'bg'}">${p.stock}</span></td><td style="font-weight:900;color:var(--p)">${bs(p.precio)}</td></tr>`).join(''):`<tr><td colspan="3"><div class="empty" style="padding:20px"><i class="ti ti-package"></i><p>Sin productos</p></div></td></table>`}
+      ${mis.length?mis.map(p=>`<tr><td style="font-weight:800">${p.nombre}</td><td><span class="badge ${(parseInt(p.stock)||0)<=3?'br2':(parseInt(p.stock)||0)<=10?'ba':'bg'}">${p.stock}</span></td><td style="font-weight:900;color:var(--p)">${bs(p.precio)}</td></tr>`).join(''):`<tr><td colspan="3"><div class="empty" style="padding:20px"><i class="ti ti-package"></i><p>Sin productos</p></div></td></tr>`}
       </tbody></table></div></div>`;
   }
   else {
@@ -345,7 +399,7 @@ function renderInicio(){
   }
 }
 
-// PEDIDOS (sin cambios de lógica, solo los selects ahora incluyen Wilson)
+// ========== PEDIDOS (sin cambios, todo correcto) ==========
 function renderPedidos(){
   const isAdmin = (R()==='admin');
   const bnp = document.getElementById('btn-np'); if(bnp) bnp.style.display='inline-flex';
@@ -435,7 +489,6 @@ function calcPedSaldo(){
   document.getElementById('ped-saldo').value = bs(Math.max(0, total - pagado));
 }
 
-// Guardar pedido (con gestión de stock)
 function guardarPed(){
   const cli = document.getElementById('ped-cli').value.trim();
   if(!cli) return toast('Ingresa el nombre del cliente','error');
@@ -647,7 +700,7 @@ function delPed(id){
   render();
 }
 
-// VENTAS
+// ========== VENTAS (sin cambios) ==========
 function getVtaFiltro(){
   const t=today(),d=new Date();
   if(vtafiltro==='hoy') return v=>v.fecha===t;
@@ -707,7 +760,7 @@ function renderVentas(){
     <td><span class="badge ${v.hermana==='Wilson'?'bgr':(v.hermana==='Karen'?'bv':'bb')}">${v.hermana}</span></td>
     <td>${fmtD(v.fecha)}</td>
     <td>${R()==='admin'?`<button class="btn btn-xs btn-danger" onclick="delVta('${v.id}')"><i class="ti ti-trash"></i></button>`:''}</td>
-  </table>`).join('');
+  </tr>`).join('');
 }
 function autoVta(){
   const pid=document.getElementById('vta-prod').value,p=db.productos.find(x=>x.id===pid);
@@ -750,7 +803,7 @@ function delVta(id){
   render();
 }
 
-// INVERSIÓN
+// ========== INVERSIÓN ==========
 function renderInversion(){
   const n=N(),lista=R()==='inversora'?db.inversiones.filter(x=>x.hermana===n):db.inversiones;
   const cards=document.getElementById('inv-cards');
@@ -781,7 +834,7 @@ function guardarInv(){
 }
 function delInv(id){ if(!confirm('¿Eliminar?')) return; db.inversiones=db.inversiones.filter(x=>x.id!==id); saveDB(); toast('Eliminado','warn'); render(); }
 
-// PRODUCTOS
+// ========== PRODUCTOS ==========
 function previewImg(input){
   const file=input.files[0]; if(!file) return;
   if(file.size>2*1024*1024){ toast('Imagen muy grande, usa una menor a 2MB','warn'); return; }
@@ -939,7 +992,7 @@ function delProd(id){ if(!confirm('¿Eliminar producto? También se eliminarán 
   db.productos=db.productos.filter(p=>p.id!==id); saveDB(); toast('Producto eliminado','warn'); render(); 
 }
 
-// COMPRAS
+// ========== COMPRAS ==========
 function renderCompras(){
   const bac=document.getElementById('btn-ac'); if(bac) bac.style.display='inline-flex';
   const tb=document.getElementById('tb-compras');
@@ -989,7 +1042,7 @@ function delComp(id){ if(!confirm('¿Eliminar compra? También se eliminará la 
   saveDB(); toast('Compra eliminada y stock revertido', 'warn'); render();
 }
 
-// Exponer funciones globales
+// ========== EXPORTAR FUNCIONES GLOBALES ==========
 window.selPerfil = selPerfil;
 window.goBack = goBack;
 window.pnext = pnext;
