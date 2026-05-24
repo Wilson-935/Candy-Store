@@ -478,7 +478,12 @@ tr:hover td{background:var(--pll)}
 
         <!-- INVERSIÓN -->
         <div class="page" id="pg-inversion">
-          <div class="pg-head"><div class="pg-title">Inversión</div><button class="btn btn-primary" onclick="openM('m-inversion')"><i class="ti ti-plus"></i> Registrar</button></div>
+          <div class="pg-head"><div class="pg-title">Inversión</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn btn-primary" onclick="openM('m-inversion')"><i class="ti ti-plus"></i> Registrar</button>
+              <button class="btn btn-amber" id="btn-sync-inv" style="display:none" onclick="syncMissingRecords()"><i class="ti ti-refresh"></i> Sincronizar</button>
+            </div>
+          </div>
           <div class="herm-grid" id="inv-cards"></div>
           <div class="card"><div class="card-hdr">Historial</div>
             <div class="table-responsive">
@@ -1358,6 +1363,9 @@ function renderInversion(){
   const tb=document.getElementById('tb-inv');
   if(!lista.length){tb.innerHTML=`<tr><td colspan="5"><div class="empty" style="padding:24px"><i class="ti ti-chart-bar"></i><p>Sin inversiones registradas</p></div></td></tr>`;return;}
   tb.innerHTML=lista.map(x=>`<tr><td style="font-weight:700">${x.desc}</td><td style="font-weight:900">${bs(x.monto)}</td><td><span class="badge bv">${x.hermana}</span></td><td>${fmtD(x.fecha)}</td><td><button class="btn btn-xs btn-danger" onclick="delInv('${x.id}')"><i class="ti ti-trash"></i></button></td></tr>`).join('');
+  
+  // Mostrar botón de sincronización solo para admin
+  document.getElementById('btn-sync-inv').style.display = R()==='admin' ? 'inline-flex' : 'none';
 }
 window.guardarInv = function(){
   const desc=document.getElementById('inv-desc').value.trim(); if(!desc) return toast('Ingresa descripción','error');
@@ -1365,6 +1373,47 @@ window.guardarInv = function(){
   saveDB(); closeM('m-inversion'); toast('Inversión registrada ✓'); render();
 };
 window.delInv = function(id){ if(!confirm('¿Eliminar?')) return; db.inversiones=db.inversiones.filter(x=>x.id!==id); saveDB(); toast('Eliminado','warn'); render(); };
+
+// NUEVA FUNCIÓN: Sincronizar registros faltantes
+window.syncMissingRecords = function(){
+  if(!confirm('Esto creará registros de Compra e Inversión para todos los productos con stock > 0 que aún no tengan una compra asociada. ¿Continuar?')) return;
+  let creados = 0;
+  db.productos.forEach(prod => {
+    if(prod.stock > 0) {
+      const tieneCompra = db.compras.some(c => c.pid === prod.id);
+      if(!tieneCompra) {
+        const fechaHoy = today();
+        const nuevaCompra = {
+          id: uid(),
+          pid: prod.id,
+          pnom: prod.nombre,
+          cant: prod.stock,
+          precio: prod.costo,
+          total: prod.stock * prod.costo,
+          hermana: prod.duena,
+          fecha: fechaHoy
+        };
+        const nuevaInversion = {
+          id: uid(),
+          hermana: prod.duena,
+          desc: `Sincronizado: ${prod.nombre}`,
+          monto: prod.stock * prod.costo,
+          fecha: fechaHoy
+        };
+        db.compras.unshift(nuevaCompra);
+        db.inversiones.unshift(nuevaInversion);
+        creados++;
+      }
+    }
+  });
+  if(creados > 0) {
+    saveDB();
+    toast(`Se generaron ${creados} registros nuevos`, 'success');
+  } else {
+    toast('Todos los productos ya tienen registros de compra', 'warn');
+  }
+  render();
+};
 
 // PRODUCTOS
 window.previewImg = function(input){
@@ -1426,35 +1475,65 @@ window.guardarProd = function(){
   const eid=document.getElementById('prod-id').value;
   const catSeleccionada = document.getElementById('prod-cat').value;
   const duenaSeleccionada = document.getElementById('prod-duena').value;
-  const p={id:eid||uid(),codigo:document.getElementById('prod-codigo').value.trim().toUpperCase(),nombre:nom,cat:catSeleccionada,duena:duenaSeleccionada,costo:parseFloat(document.getElementById('prod-costo').value)||0,precio:parseFloat(document.getElementById('prod-precio').value)||0,stock:parseInt(document.getElementById('prod-stock').value)||0,notas:document.getElementById('prod-notas').value,img:document.getElementById('prod-img-data').value||''};
+  const p={
+    id:eid||uid(),
+    codigo:document.getElementById('prod-codigo').value.trim().toUpperCase(),
+    nombre:nom,
+    cat:catSeleccionada,
+    duena:duenaSeleccionada,
+    costo:parseFloat(document.getElementById('prod-costo').value)||0,
+    precio:parseFloat(document.getElementById('prod-precio').value)||0,
+    stock:parseInt(document.getElementById('prod-stock').value)||0,
+    notas:document.getElementById('prod-notas').value,
+    img:document.getElementById('prod-img-data').value||''
+  };
   const idx=db.productos.findIndex(x=>x.id===p.id);
-  if(idx>=0) db.productos[idx]=p;
-  else {
-    db.productos.unshift(p);
-    // NUEVA LÓGICA: si es producto nuevo Y tiene stock > 0, registrar tanto COMPRA como INVERSIÓN automáticamente
-    if(p.stock > 0) {
-      const fechaHoy = today();
-      const inversionAuto = {
-        id: uid(),
-        hermana: p.duena,
-        desc: `Stock inicial: ${p.nombre}`,
-        monto: p.stock * p.costo,
-        fecha: fechaHoy
-      };
-      db.inversiones.unshift(inversionAuto);
-      const compraAuto = {
-        id: uid(),
-        pid: p.id,
-        pnom: p.nombre,
-        cant: p.stock,
-        precio: p.costo,
-        total: p.stock * p.costo,
-        hermana: p.duena,
-        fecha: fechaHoy
-      };
-      db.compras.unshift(compraAuto);
-    }
+  const esNuevo = !eid;
+  let oldStock = 0;
+  if(!esNuevo) {
+    oldStock = db.productos[idx]?.stock || 0;
   }
+  
+  if(idx>=0) {
+    db.productos[idx]=p;
+  } else {
+    db.productos.unshift(p);
+  }
+  
+  // Generar registros automáticos si corresponde
+  let cantidadAgregada = 0;
+  if(esNuevo && p.stock > 0) {
+    cantidadAgregada = p.stock;
+  } else if(!esNuevo && p.stock > oldStock) {
+    cantidadAgregada = p.stock - oldStock;
+  }
+  
+  if(cantidadAgregada > 0) {
+    const fechaHoy = today();
+    const compraAuto = {
+      id: uid(),
+      pid: p.id,
+      pnom: p.nombre,
+      cant: cantidadAgregada,
+      precio: p.costo,
+      total: cantidadAgregada * p.costo,
+      hermana: p.duena,
+      fecha: fechaHoy
+    };
+    db.compras.unshift(compraAuto);
+    
+    const inversionAuto = {
+      id: uid(),
+      hermana: p.duena,
+      desc: `${esNuevo ? 'Stock inicial' : 'Aumento stock'}: ${p.nombre}`,
+      monto: cantidadAgregada * p.costo,
+      fecha: fechaHoy
+    };
+    db.inversiones.unshift(inversionAuto);
+    
+    toast(`✅ Compra e inversión automáticas registradas (${bs(cantidadAgregada * p.costo)})`, 'success');
+  }
+  
   saveDB(); closeM('m-producto'); toast(eid?'Producto actualizado ✓':'Producto agregado ✓'); render();
 };
 window.editProd = function(id){
