@@ -78,7 +78,7 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);font-s
 .pin-row{display:flex;gap:10px;justify-content:center;margin-bottom:14px}
 .pin-row input{width:52px;height:56px;text-align:center;font-size:24px;font-weight:900;
   border:2.5px solid var(--br);border-radius:12px;font-family:'Nunito',sans-serif;
-  color:var(--pd);background:var(--pll);transition:all .15s;-webkit-text-security:disc;appearance:textfield}
+  color:var(--pd);background:var(--pll);transition:all .15s;appearance:textfield}
 .pin-row input:focus{outline:none;border-color:var(--p);background:var(--pl);box-shadow:0 0 0 3px rgba(139,92,246,.15)}
 .btn-back{width:100%;padding:11px;border:2px solid var(--br);border-radius:10px;
   background:var(--pll);color:var(--pd);font-size:13px;font-weight:800;cursor:pointer;
@@ -203,12 +203,14 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);font-s
 .metric-val{font-size:20px;font-weight:900;color:var(--pd);line-height:1.2}
 .metric-sub{font-size:10px;color:var(--mu);margin-top:3px;font-weight:700}
 
+/* TABLAS MEJORADAS */
 table{width:100%;border-collapse:collapse;font-size:12px}
-th{padding:9px 10px;color:var(--pd);font-weight:800;border-bottom:2px solid var(--pl);
-  background:var(--pll);font-size:11px;text-align:left;white-space:nowrap}
-td{padding:9px 10px;border-bottom:1px solid #F0EDFF;vertical-align:middle}
+th{padding:10px 12px;color:var(--pd);font-weight:800;border-bottom:2px solid var(--pl);
+  background:var(--pll);font-size:12px;text-align:left;white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid #F0EDFF;vertical-align:middle}
 tr:last-child td{border-bottom:none}
 tr:hover td{background:var(--pll)}
+.table-responsive{overflow-x:auto;margin-top:4px}
 
 /* BADGES */
 .badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:800;white-space:nowrap}
@@ -377,10 +379,10 @@ tr:hover td{background:var(--pll)}
     <div id="step-perfil">
       <div class="login-q">¿Quién eres?</div>
       <div class="perfiles">
-        <div class="pfbtn" onclick="selPerfil('wilson')"><div class="sel-check">✓</div><div class="pf-ico"><i class="ti ti-shield-check"></i></div><div class="pf-name">Wilson</div><div class="pf-rol">Admin</div></div>
-        <div class="pfbtn" onclick="selPerfil('karen')"><div class="sel-check">✓</div><div class="pf-ico"><i class="ti ti-user-circle"></i></div><div class="pf-name">Karen</div><div class="pf-rol">Inversora</div></div>
-        <div class="pfbtn" onclick="selPerfil('samantha')"><div class="sel-check">✓</div><div class="pf-ico"><i class="ti ti-user-circle"></i></div><div class="pf-name">Samantha</div><div class="pf-rol">Inversora</div></div>
-        <div class="pfbtn" onclick="selPerfil('mama')"><div class="sel-check">✓</div><div class="pf-ico"><i class="ti ti-heart"></i></div><div class="pf-name">Mamá</div><div class="pf-rol">Operadora</div></div>
+        <div class="pfbtn" onclick="selPerfil('wilson', event)"><div class="sel-check">✓</div><div class="pf-ico"><i class="ti ti-shield-check"></i></div><div class="pf-name">Wilson</div><div class="pf-rol">Admin</div></div>
+        <div class="pfbtn" onclick="selPerfil('karen', event)"><div class="sel-check">✓</div><div class="pf-ico"><i class="ti ti-user-circle"></i></div><div class="pf-name">Karen</div><div class="pf-rol">Inversora</div></div>
+        <div class="pfbtn" onclick="selPerfil('samantha', event)"><div class="sel-check">✓</div><div class="pf-ico"><i class="ti ti-user-circle"></i></div><div class="pf-name">Samantha</div><div class="pf-rol">Inversora</div></div>
+        <div class="pfbtn" onclick="selPerfil('mama', event)"><div class="sel-check">✓</div><div class="pf-ico"><i class="ti ti-heart"></i></div><div class="pf-name">Mamá</div><div class="pf-rol">Operadora</div></div>
       </div>
     </div>
     <div id="step-pin" class="pin-section">
@@ -458,8 +460,14 @@ tr:hover td{background:var(--pll)}
           </div>
           <div class="herm-grid" id="res-herm"></div>
           <div class="card"><div class="card-hdr">Registro de ventas <span id="vta-count" class="badge bgr"></span></div>
-            <div style="overflow-x:auto"><table><thead><tr><th>Producto</th><th>Cant.</th><th>Total</th><th>Ganancia</th><th>De quién</th><th>Fecha</th><th></th></tr></thead>
-            <tbody id="tb-ventas"></tbody></table></div>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr><th>Producto</th><th>Cant.</th><th>Total</th><th>Ganancia</th><th>De quién</th><th>Fecha</th><th></th></tr>
+                </thead>
+                <tbody id="tb-ventas"></tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -468,8 +476,14 @@ tr:hover td{background:var(--pll)}
           <div class="pg-head"><div class="pg-title">Inversión</div><button class="btn btn-primary" onclick="openM('m-inversion')"><i class="ti ti-plus"></i> Registrar</button></div>
           <div class="herm-grid" id="inv-cards"></div>
           <div class="card"><div class="card-hdr">Historial</div>
-            </table><thead><tr><th>Descripción</th><th>Monto</th><th>Hermana</th><th>Fecha</th><th></th></tr></thead>
-            <tbody id="tb-inv"></tbody></table>
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr><th>Descripción</th><th>Monto</th><th>Hermana</th><th>Fecha</th><th></th></tr>
+                </thead>
+                <tbody id="tb-inv"></tbody>
+              </table>
+            </div>
           </div>
         </div>
 
@@ -489,9 +503,11 @@ tr:hover td{background:var(--pll)}
         <!-- COMPRAS -->
         <div class="page" id="pg-compras">
           <div class="pg-head"><div class="pg-title">Compras</div><button class="btn btn-primary" id="btn-ac" onclick="openM('m-compra')"><i class="ti ti-plus"></i> Registrar</button></div>
-          <div class="card"><div style="overflow-x:auto">
-            <table><thead><tr><th>Producto</th><th>Cant.</th><th>Precio unit.</th><th>Total inv.</th><th>Quién compró</th><th>Fecha</th><th></th></tr></thead>
-            <tbody id="tb-compras"></tbody></table>
+          <div class="card"><div class="table-responsive">
+            <table>
+              <thead><tr><th>Producto</th><th>Cant.</th><th>Precio unit.</th><th>Total inv.</th><th>Quién compró</th><th>Fecha</th><th></th></tr></thead>
+              <tbody id="tb-compras"></tbody>
+            </table>
           </div></div>
         </div>
 
@@ -503,7 +519,6 @@ tr:hover td{background:var(--pll)}
 </div>
 
 <!-- MODALES -->
-
 <!-- PEDIDO -->
 <div class="modal-ov" id="m-pedido">
   <div class="modal">
@@ -635,7 +650,6 @@ tr:hover td{background:var(--pll)}
   </div>
 </div>
 
-<!-- FIREBASE SDK -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
@@ -747,10 +761,11 @@ function saveDB(){
 window.saveDB = saveDB;
 
 // LOGIN
-window.selPerfil = function(u){
+window.selPerfil = function(u, ev){
   selU = u;
+  const btn = ev.currentTarget;
   document.querySelectorAll('.pfbtn').forEach(b=>b.classList.remove('sel'));
-  event.currentTarget.classList.add('sel');
+  btn.classList.add('sel');
   document.getElementById('lerr').textContent='';
   ['p0','p1','p2','p3'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('step-perfil').style.display='none';
@@ -928,10 +943,10 @@ function renderInicio(){
     const misGanancias=misVentas.reduce((s,v)=>s+(v.total-v.costo),0);
     const misProd=db.productos.filter(p=>p.duena==='Wilson'||p.duena==='Ambas'), misStock=misProd.reduce((s,p)=>s+(parseInt(p.stock)||0),0);
     const misInv=db.inversiones.filter(x=>x.hermana==='Wilson').reduce((s,x)=>s+x.monto,0);
-    const pendientesHtml = (db.pedidos.filter(p=>p.estado==='pendiente').slice(0,5).map(p=>{
+    const pendientesHtml = db.pedidos.filter(p=>p.estado==='pendiente').slice(0,5).map(p=>{
         const saldo = (p.total||0)-(p.pagado||0);
         return `<tr><td style="font-weight:800">${p.cli}</td><td style="font-size:11px">${(p.productoTexto||p.prod||'').slice(0,22)}</td><td><span class="badge bv">${p.duena||'?'}</span></td><td>${saldo>0?`<span class="badge ba">${bs(saldo)}</span>`:'<span class="badge bg">✅</span>'}</td></tr>`;
-      }).join('') || '<tr><td colspan="4"><div class="empty" style="padding:20px"><i class="ti ti-check"></i><p>Sin pendientes</p></div></td></tr>');
+      }).join('') || '<tr><td colspan="4"><div class="empty" style="padding:20px"><i class="ti ti-check"></i><p>Sin pendientes</p></div></td></tr>';
     const stockBajo = db.productos.filter(p=>(parseInt(p.stock)||0)<=3);
     const stockBajoHtml = stockBajo.length ? `<div class="card"><div class="card-hdr">⚠️ Stock bajo (≤3)</div><table><thead><tr><th>Producto</th><th>Stock</th><th>Dueña</th></tr></thead><tbody>${stockBajo.map(p=>`<tr><td style="font-weight:800">${p.nombre}</td><td><span class="badge br2">${p.stock}</span></td><td><span class="badge bv">${p.duena}</span></td></tr>`).join('')}</tbody></table></div>` : '';
     ex.innerHTML=`
@@ -958,7 +973,7 @@ function renderInicio(){
       ${mis.length?mis.map(p=>`<tr><td style="font-weight:800">${p.nombre}</td><td><span class="badge ${(parseInt(p.stock)||0)<=3?'br2':(parseInt(p.stock)||0)<=10?'ba':'bg'}">${p.stock}</span></td><td style="font-weight:900;color:var(--p)">${bs(p.precio)}</td></tr>`).join(''):`<tr><td colspan="3"><div class="empty" style="padding:20px"><i class="ti ti-package"></i><p>Sin productos</p></div></td></tr>`}
       </tbody></table></div>`;
   }
-  else { // operadora
+  else {
     const pds=db.pedidos.filter(p=>p.estado==='pendiente'),st=pds.reduce((s,p)=>s+(p.total||0)-(p.pagado||0),0);
     const vtasH=db.ventas.filter(v=>v.fecha===t),ihO=vtasH.reduce((s,v)=>s+v.total,0);
     m.innerHTML=`
@@ -999,7 +1014,7 @@ function renderPedidos(){
           <div class="ped-tags">${etag}${stag}<span class="badge bv">👩 ${p.duena||'?'}</span></div>
           <div class="ped-prod">${cantidad} x ${productoMostrar} = ${bs(total)}</div>
           ${(p.costoUnitario||p.precioVenta)?`<div class="ped-precios"><span style="color:var(--mu)">Costo unit: ${bs(p.costoUnitario)}</span><span style="color:var(--p)">Venta unit: ${bs(p.precioVenta)}</span>${aum?`<span style="color:var(--g)">+${bs(aum)}</span>`:''}</div>`:''}
-          ${p.dir?`<div class="ped-detail">📍 ${p.dir}</div>`:''}
+          ${p.dir?`<div class="ped-detail"> ${p.dir}</div>`:''}
           ${p.notas?`<div class="ped-detail">📝 ${p.notas}</div>`:''}
         </div>
         <div style="text-align:right;flex-shrink:0">
