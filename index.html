@@ -76,9 +76,14 @@ body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--tx);font-s
 .pin-section{display:none}
 .pin-lbl{font-size:11px;font-weight:800;color:var(--mu);text-align:center;margin-bottom:10px;letter-spacing:.5px}
 .pin-row{display:flex;gap:10px;justify-content:center;margin-bottom:14px}
-.pin-row input{width:52px;height:56px;text-align:center;font-size:24px;font-weight:900;
+.pin-row input{
+  width:52px;height:56px;text-align:center;font-size:24px;font-weight:900;
   border:2.5px solid var(--br);border-radius:12px;font-family:'Nunito',sans-serif;
-  color:var(--pd);background:var(--pll);transition:all .15s;appearance:textfield}
+  color:var(--pd);background:var(--pll);transition:all .15s;
+  -webkit-text-security: disc;
+  text-security: disc;
+  appearance: none;
+}
 .pin-row input:focus{outline:none;border-color:var(--p);background:var(--pl);box-shadow:0 0 0 3px rgba(139,92,246,.15)}
 .btn-back{width:100%;padding:11px;border:2px solid var(--br);border-radius:10px;
   background:var(--pll);color:var(--pd);font-size:13px;font-weight:800;cursor:pointer;
@@ -492,9 +497,9 @@ tr:hover td{background:var(--pll)}
           <div class="pg-head"><div class="pg-title">Productos</div><button class="btn btn-primary" id="btn-ap" onclick="openM('m-producto')"><i class="ti ti-plus"></i> Agregar</button></div>
           <div style="display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap">
             <button class="cat-filt-btn active" data-cat="todas" onclick="filtrarCategoria('todas', this)">📦 Todas</button>
-            <button class="cat-filt-btn" data-cat="CEPILLOS & DEPILADORES" onclick="filtrarCategoria('CEPILLOS & DEPILADORES', this)">🪥 Cepillos & Depiladores</button>
-            <button class="cat-filt-btn" data-cat="PLANCHAS & BUCLEADOR" onclick="filtrarCategoria('PLANCHAS & BUCLEADOR', this)">🌀 Planchas & Bucleador</button>
-            <button class="cat-filt-btn" data-cat="SECADORAS ENZO" onclick="filtrarCategoria('SECADORAS ENZO', this)">💨 Secadoras Enzo</button>
+            <button class="cat-filt-btn" data-cat="CEPILLOS & DEPILADORES" onclick="filtrarCategoria('CEPILLOS & DEPILADORES', this)">Cepillos & Depiladores</button>
+            <button class="cat-filt-btn" data-cat="PLANCHAS & BUCLEADOR" onclick="filtrarCategoria('PLANCHAS & BUCLEADOR', this)">Planchas & Bucleador</button>
+            <button class="cat-filt-btn" data-cat="SECADORAS ENZO" onclick="filtrarCategoria('SECADORAS ENZO', this)">Secadoras Enzo</button>
           </div>
           <div class="search-bar"><i class="ti ti-search"></i><input type="text" id="prod-search" placeholder="Buscar por nombre, código o categoría..." oninput="renderProductos()"></div>
           <div id="prod-grid" class="prod-grid"></div>
@@ -947,8 +952,22 @@ function renderInicio(){
         const saldo = (p.total||0)-(p.pagado||0);
         return `<tr><td style="font-weight:800">${p.cli}</td><td style="font-size:11px">${(p.productoTexto||p.prod||'').slice(0,22)}</td><td><span class="badge bv">${p.duena||'?'}</span></td><td>${saldo>0?`<span class="badge ba">${bs(saldo)}</span>`:'<span class="badge bg">✅</span>'}</td></tr>`;
       }).join('') || '<tr><td colspan="4"><div class="empty" style="padding:20px"><i class="ti ti-check"></i><p>Sin pendientes</p></div></td></tr>';
-    const stockBajo = db.productos.filter(p=>(parseInt(p.stock)||0)<=3);
-    const stockBajoHtml = stockBajo.length ? `<div class="card"><div class="card-hdr">⚠️ Stock bajo (≤3)</div><table><thead><tr><th>Producto</th><th>Stock</th><th>Dueña</th></tr></thead><tbody>${stockBajo.map(p=>`<tr><td style="font-weight:800">${p.nombre}</td><td><span class="badge br2">${p.stock}</span></td><td><span class="badge bv">${p.duena}</span></td></tr>`).join('')}</tbody></table></div>` : '';
+    
+    // TABLA STOCK BAJO CORREGIDA
+    const stockBajo = db.productos.filter(p=>(parseInt(p.stock)||0)<=2);
+    let stockBajoHtml = '';
+    if(stockBajo.length){
+      stockBajoHtml = `<div class="card"><div class="card-hdr">⚠️ Stock bajo (≤2)</div>
+        <div class="table-responsive">
+          <table>
+            <thead><tr><th>Producto</th><th>Stock</th><th>Dueña</th></tr></thead>
+            <tbody>
+              ${stockBajo.map(p=>`<tr><td style="font-weight:800">${p.nombre}</td><td><span class="badge br2">${p.stock}</span></td><td><span class="badge bv">${p.duena}</span></td></tr>`).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>`;
+    }
     ex.innerHTML=`
       <div class="card"><div class="card-hdr">📊 Mi rendimiento (Wilson)</div>
       <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:16px">
@@ -957,7 +976,8 @@ function renderInicio(){
         <div class="metric" style="margin:0"><div class="metric-lbl">💸 Mi inversión</div><div class="metric-val">${bs(misInv)}</div></div>
         <div class="metric" style="margin:0"><div class="metric-lbl">📦 Mis productos</div><div class="metric-val">${misStock}</div></div>
       </div></div>
-      <div class="card"><div class="card-hdr">⏳ Pedidos pendientes</div><table><thead><tr><th>Cliente</th><th>Producto</th><th>Dueña</th><th>Saldo</th></tr></thead><tbody>${pendientesHtml}</tbody></table></div>
+      <div class="card"><div class="card-hdr">⏳ Pedidos pendientes</div>
+      <div class="table-responsive"><table><thead><tr><th>Cliente</th><th>Producto</th><th>Dueña</th><th>Saldo</th></tr></thead><tbody>${pendientesHtml}</tbody></table></div></div>
       ${stockBajoHtml}`;
   }
   else if(R()==='inversora'){
@@ -969,9 +989,10 @@ function renderInicio(){
       <div class="metric"><div class="metric-lbl">📈 Mi ganancia</div><div class="metric-val" style="color:${gan>=0?'var(--g)':'var(--r)'}">${bs(gan)}</div><div class="metric-sub">estimada</div></div>
       <div class="metric"><div class="metric-lbl">💸 Mi inversión</div><div class="metric-val">${bs(inv)}</div><div class="metric-sub">total</div></div>
       <div class="metric"><div class="metric-lbl">📦 Mis productos</div><div class="metric-val">${stk}</div><div class="metric-sub">en stock</div></div>`;
-    ex.innerHTML=`<div class="card"><div class="card-hdr">Mis productos en stock</div><table><thead><tr><th>Producto</th><th>Stock</th><th>Precio</th></tr></thead><tbody>
+    ex.innerHTML=`<div class="card"><div class="card-hdr">Mis productos en stock</div>
+      <div class="table-responsive"><table><thead><tr><th>Producto</th><th>Stock</th><th>Precio</th></tr></thead><tbody>
       ${mis.length?mis.map(p=>`<tr><td style="font-weight:800">${p.nombre}</td><td><span class="badge ${(parseInt(p.stock)||0)<=3?'br2':(parseInt(p.stock)||0)<=10?'ba':'bg'}">${p.stock}</span></td><td style="font-weight:900;color:var(--p)">${bs(p.precio)}</td></tr>`).join(''):`<tr><td colspan="3"><div class="empty" style="padding:20px"><i class="ti ti-package"></i><p>Sin productos</p></div></td></tr>`}
-      </tbody></table></div>`;
+      </tbody></table></div></div>`;
   }
   else {
     const pds=db.pedidos.filter(p=>p.estado==='pendiente'),st=pds.reduce((s,p)=>s+(p.total||0)-(p.pagado||0),0);
@@ -1014,7 +1035,7 @@ function renderPedidos(){
           <div class="ped-tags">${etag}${stag}<span class="badge bv">👩 ${p.duena||'?'}</span></div>
           <div class="ped-prod">${cantidad} x ${productoMostrar} = ${bs(total)}</div>
           ${(p.costoUnitario||p.precioVenta)?`<div class="ped-precios"><span style="color:var(--mu)">Costo unit: ${bs(p.costoUnitario)}</span><span style="color:var(--p)">Venta unit: ${bs(p.precioVenta)}</span>${aum?`<span style="color:var(--g)">+${bs(aum)}</span>`:''}</div>`:''}
-          ${p.dir?`<div class="ped-detail"> ${p.dir}</div>`:''}
+          ${p.dir?`<div class="ped-detail">📍 ${p.dir}</div>`:''}
           ${p.notas?`<div class="ped-detail">📝 ${p.notas}</div>`:''}
         </div>
         <div style="text-align:right;flex-shrink:0">
