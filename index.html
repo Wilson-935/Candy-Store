@@ -540,7 +540,11 @@ tr:hover td{background:var(--pll)}
         <input id="ped-prod" placeholder="O escribe manualmente...">
       </div>
       <div class="field"><label>🏷️ ¿De quién es el producto?</label>
-        <select id="ped-duena"><option value="Wilson">Wilson</option><option value="Karen">Karen</option><option value="Samantha">Samantha</option><option value="Ambas">Ambas</option></select>
+        <select id="ped-duena">
+          <option value="Wilson">Wilson</option>
+          <option value="Karen">Karen</option>
+          <option value="Samantha">Samantha</option>
+        </select>
       </div>
       <div class="grid3">
         <div class="field"><label>💸 Costo (Bs.)</label><input id="ped-costo" type="number" min="0" step="0.01" oninput="calcPedPrecio()" placeholder="0.00"></div>
@@ -604,7 +608,13 @@ tr:hover td{background:var(--pll)}
       </div>
       <div class="grid2">
         <div class="field"><label>🏷️ Código</label><input id="prod-codigo" placeholder="Ej: SEC-001" style="text-transform:uppercase"></div>
-        <div class="field"><label>👩 ¿De quién?</label><select id="prod-duena"><option value="Wilson">Wilson</option><option value="Karen">Karen</option><option value="Samantha">Samantha</option><option value="Ambas">Ambas</option></select></div>
+        <div class="field"><label>👩 ¿De quién?</label>
+          <select id="prod-duena">
+            <option value="Wilson">Wilson</option>
+            <option value="Karen">Karen</option>
+            <option value="Samantha">Samantha</option>
+          </select>
+        </div>
       </div>
       <div class="field"><label>📦 Nombre del producto</label><input id="prod-nom" placeholder="Ej: Secadora Remington azul"></div>
       <div class="field"><label>🗂️ Categoría</label>
@@ -946,14 +956,13 @@ function renderInicio(){
       <div class="metric"><div class="metric-lbl">📦 Stock total</div><div class="metric-val">${stk}</div><div class="metric-sub">unidades</div></div>`;
     const misVentas=db.ventas.filter(v=>v.hermana==='Wilson'), misIngresos=misVentas.reduce((s,v)=>s+v.total,0);
     const misGanancias=misVentas.reduce((s,v)=>s+(v.total-v.costo),0);
-    const misProd=db.productos.filter(p=>p.duena==='Wilson'||p.duena==='Ambas'), misStock=misProd.reduce((s,p)=>s+(parseInt(p.stock)||0),0);
+    const misProd=db.productos.filter(p=>p.duena==='Wilson'), misStock=misProd.reduce((s,p)=>s+(parseInt(p.stock)||0),0);
     const misInv=db.inversiones.filter(x=>x.hermana==='Wilson').reduce((s,x)=>s+x.monto,0);
     const pendientesHtml = db.pedidos.filter(p=>p.estado==='pendiente').slice(0,5).map(p=>{
         const saldo = (p.total||0)-(p.pagado||0);
         return `<tr><td style="font-weight:800">${p.cli}</td><td style="font-size:11px">${(p.productoTexto||p.prod||'').slice(0,22)}</td><td><span class="badge bv">${p.duena||'?'}</span></td><td>${saldo>0?`<span class="badge ba">${bs(saldo)}</span>`:'<span class="badge bg">✅</span>'}</td></tr>`;
       }).join('') || '<tr><td colspan="4"><div class="empty" style="padding:20px"><i class="ti ti-check"></i><p>Sin pendientes</p></div></td></tr>';
     
-    // TABLA STOCK BAJO CORREGIDA
     const stockBajo = db.productos.filter(p=>(parseInt(p.stock)||0)<=2);
     let stockBajoHtml = '';
     if(stockBajo.length){
@@ -983,7 +992,7 @@ function renderInicio(){
   else if(R()==='inversora'){
     const vs=db.ventas.filter(v=>v.hermana===N()),ing=vs.reduce((s,v)=>s+v.total,0),gan=vs.reduce((s,v)=>s+(v.total-v.costo),0);
     const inv=db.inversiones.filter(x=>x.hermana===N()).reduce((s,x)=>s+x.monto,0);
-    const mis=db.productos.filter(p=>p.duena===N()||p.duena==='Ambas'),stk=mis.reduce((s,p)=>s+(parseInt(p.stock)||0),0);
+    const mis=db.productos.filter(p=>p.duena===N()),stk=mis.reduce((s,p)=>s+(parseInt(p.stock)||0),0);
     m.innerHTML=`
       <div class="metric"><div class="metric-lbl">💰 Mis ventas</div><div class="metric-val">${bs(ing)}</div><div class="metric-sub">${vs.length} registros</div></div>
       <div class="metric"><div class="metric-lbl">📈 Mi ganancia</div><div class="metric-val" style="color:${gan>=0?'var(--g)':'var(--r)'}">${bs(gan)}</div><div class="metric-sub">estimada</div></div>
@@ -1065,7 +1074,7 @@ window.pedDesdeStock = function(){
   document.getElementById('ped-costo').value = p.costo;
   document.getElementById('ped-pv').value = p.precio;
   document.getElementById('ped-aum').value = bs(p.precio - p.costo);
-  if(p.duena && p.duena!=='Ambas') document.getElementById('ped-duena').value = p.duena;
+  if(p.duena) document.getElementById('ped-duena').value = p.duena;
   calcPedTotal();
 };
 window.calcPedPrecio = function(){
@@ -1285,7 +1294,7 @@ window.autoVta = function(){
   const warn=document.getElementById('vta-stock-warn');
   if(p){
     document.getElementById('vta-precio').value=p.precio;
-    if(R()==='admin'||R()==='inversora') document.getElementById('vta-hermana').value=p.duena === 'Ambas' ? N() : p.duena;
+    if(R()==='admin'||R()==='inversora') document.getElementById('vta-hermana').value=p.duena;
     if((parseInt(p.stock)||0)<=3){warn.style.display='block';warn.textContent=`⚠️ Stock bajo: solo quedan ${p.stock} unidades`;}
     else warn.style.display='none';
     calcVta();
@@ -1376,7 +1385,7 @@ window.autoPrecio = function(){
 function renderProductos(){
   const bap=document.getElementById('btn-ap'); if(bap) bap.style.display='inline-flex';
   const q=(document.getElementById('prod-search')?.value||'').toLowerCase().trim();
-  let lista=R()==='inversora'?db.productos.filter(p=>p.duena===N()||p.duena==='Ambas'):db.productos;
+  let lista=R()==='inversora'?db.productos.filter(p=>p.duena===N()):db.productos;
   if(categoriaFiltro !== 'todas'){
     lista = lista.filter(p => p.cat === categoriaFiltro);
   }
@@ -1419,7 +1428,33 @@ window.guardarProd = function(){
   const duenaSeleccionada = document.getElementById('prod-duena').value;
   const p={id:eid||uid(),codigo:document.getElementById('prod-codigo').value.trim().toUpperCase(),nombre:nom,cat:catSeleccionada,duena:duenaSeleccionada,costo:parseFloat(document.getElementById('prod-costo').value)||0,precio:parseFloat(document.getElementById('prod-precio').value)||0,stock:parseInt(document.getElementById('prod-stock').value)||0,notas:document.getElementById('prod-notas').value,img:document.getElementById('prod-img-data').value||''};
   const idx=db.productos.findIndex(x=>x.id===p.id);
-  if(idx>=0) db.productos[idx]=p; else db.productos.unshift(p);
+  if(idx>=0) db.productos[idx]=p;
+  else {
+    db.productos.unshift(p);
+    // NUEVA LÓGICA: si es producto nuevo Y tiene stock > 0, registrar tanto COMPRA como INVERSIÓN automáticamente
+    if(p.stock > 0) {
+      const fechaHoy = today();
+      const inversionAuto = {
+        id: uid(),
+        hermana: p.duena,
+        desc: `Stock inicial: ${p.nombre}`,
+        monto: p.stock * p.costo,
+        fecha: fechaHoy
+      };
+      db.inversiones.unshift(inversionAuto);
+      const compraAuto = {
+        id: uid(),
+        pid: p.id,
+        pnom: p.nombre,
+        cant: p.stock,
+        precio: p.costo,
+        total: p.stock * p.costo,
+        hermana: p.duena,
+        fecha: fechaHoy
+      };
+      db.compras.unshift(compraAuto);
+    }
+  }
   saveDB(); closeM('m-producto'); toast(eid?'Producto actualizado ✓':'Producto agregado ✓'); render();
 };
 window.editProd = function(id){
