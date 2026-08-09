@@ -8,10 +8,12 @@ const firebaseConfig = {
   appId: "1:713005280377:web:a7d878fe451486dfa5f8a8"
 };
 
-// Carga la nueva lógica después de que app.js haya inicializado Firebase.
-// Mantiene la interfaz actual y permite una migración progresiva de la base.
+// Carga progresiva de la lógica V2 sin modificar la interfaz existente.
 queueMicrotask(() => {
-  import('./v2-engine.js').catch(err => console.error('No se pudo cargar Candy Store V2:', err));
+  Promise.all([
+    import('./v2-engine.js'),
+    import('./v2-finance-tools.js')
+  ]).catch(err => console.error('No se pudo cargar Candy Store V2:', err));
 });
 
 export default firebaseConfig;
