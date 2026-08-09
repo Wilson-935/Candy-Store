@@ -7,4 +7,11 @@ const firebaseConfig = {
   messagingSenderId: "713005280377",
   appId: "1:713005280377:web:a7d878fe451486dfa5f8a8"
 };
+
+// Carga la nueva lógica después de que app.js haya inicializado Firebase.
+// Mantiene la interfaz actual y permite una migración progresiva de la base.
+queueMicrotask(() => {
+  import('./v2-engine.js').catch(err => console.error('No se pudo cargar Candy Store V2:', err));
+});
+
 export default firebaseConfig;
